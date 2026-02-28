@@ -4,7 +4,7 @@
 <PLUGIN 
   name="vm-backup-and-restore_beta"
   author="jcofer555"
-  version="2026.02.27.04"
+  version="2026.02.28.01"
   launch="Settings/vm-backup-and-restore_beta"
   pluginURL="https://raw.githubusercontent.com/jcofer555/vm-backup-and-restore_beta/main/plugin/vm-backup-and-restore_beta.plg"
   support="https://forums.unraid.net/topic/197218-vm-backup-restore-for-unraid/"
@@ -16,26 +16,18 @@
 <CHANGES>
 <![CDATA[
 
-### 2026.02.27.04
+### 2026.02.28.01
 
-- Fix for github version mistake
-
-### 2026.02.27.02
-
-- Added a debug log
-
-### 2026.02.27.01
-
-- Added create button to picker modals for backup and restore destinations
+- 1
 
 
 For older releases, see https://github.com/jcofer555/vm-backup-and-restore_beta/releases
 ]]>
 </CHANGES>
 
-<FILE Name="/boot/config/plugins/vm-backup-and-restore_beta/unraid-vm-backup-and-restore_beta-2026.02.27.04-noarch-1.txz">
-<URL>https://github.com/jcofer555/vm-backup-and-restore_beta/releases/download/2026.02.27.04/unraid-vm-backup-and-restore_beta-2026.02.27.04-noarch-1.txz</URL>
-<SHA256>aec8dce6b3b7750a07ac6f7041a511ab5291941171f0b1da95518e821eabb4cf</SHA256>
+<FILE Name="/boot/config/plugins/vm-backup-and-restore_beta/unraid-vm-backup-and-restore_beta-2026.02.28.01-noarch-1.txz">
+<URL>https://github.com/jcofer555/vm-backup-and-restore_beta/releases/download/2026.02.28.01/unraid-vm-backup-and-restore_beta-2026.02.28.01-noarch-1.txz</URL>
+<SHA256>93007b8595592555ee4ee4aec5fa1194405e30ea0ba0ece092bc7eb16cf93981</SHA256>
 </FILE>
 
 <!-- ==========================================================
@@ -48,7 +40,7 @@ For older releases, see https://github.com/jcofer555/vm-backup-and-restore_beta/
 #  INSTALL / UPGRADE LOGIC
 # ==========================================================
 
-PACKAGE_TXZ="/boot/config/plugins/vm-backup-and-restore_beta/unraid-vm-backup-and-restore_beta-2026.02.27.04-noarch-1.txz"
+PACKAGE_TXZ="/boot/config/plugins/vm-backup-and-restore_beta/unraid-vm-backup-and-restore_beta-2026.02.28.01-noarch-1.txz"
 USER_CFG="/boot/config/plugins/vm-backup-and-restore_beta/settings.cfg"
 RESTORE_USER_CFG="/boot/config/plugins/vm-backup-and-restore_beta/settings_restore.cfg"
 DEFAULT_CFG="/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/default_settings.cfg"
@@ -67,7 +59,8 @@ ordered_keys=(
     "BACKUP_OWNER"
     "DRY_RUN"
     "NOTIFICATIONS"
-    "DISCORD_WEBHOOK_URL"
+    "NOTIFICATION_SERVICE"
+    "WEBHOOK_URL"
     "PUSHOVER_USER_KEY"
 )
 
@@ -103,7 +96,8 @@ restore_ordered_keys=(
     "RESTORE_DESTINATION"
     "DRY_RUN_RESTORE"
     "NOTIFICATIONS_RESTORE"
-    "DISCORD_WEBHOOK_URL_RESTORE"
+    "NOTIFICATION_SERVICE_RESTORE"
+    "WEBHOOK_URL_RESTORE"
     "PUSHOVER_USER_KEY_RESTORE"
 )
 
@@ -132,12 +126,12 @@ fi
 mv "$RESTORE_TMP_CFG" "$RESTORE_USER_CFG"
 
 # Remove older txz packages (keep only the current one)
-find /boot/config/plugins/vm-backup-and-restore_beta/ -maxdepth 1 -type f -name "unraid-vm-backup-and-restore_beta-*.txz" ! -name "unraid-vm-backup-and-restore_beta-2026.02.27.04-noarch-1.txz" -delete
+find /boot/config/plugins/vm-backup-and-restore_beta/ -maxdepth 1 -type f -name "unraid-vm-backup-and-restore_beta-*.txz" ! -name "unraid-vm-backup-and-restore_beta-2026.02.28.01-noarch-1.txz" -delete
 
 echo ""
 echo "----------------------------------------------------"
 echo " vm-backup-and-restore_beta has been installed."
-echo " Version: 2026.02.27.04"
+echo " Version: 2026.02.28.01"
 echo "----------------------------------------------------"
 echo ""
 
