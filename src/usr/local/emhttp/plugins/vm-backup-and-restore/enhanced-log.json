@@ -1,5 +1,8 @@
 {
     "files": [
-        "/tmp/vm-backup-and-restore_beta/vm-backup-and-restore_beta.log"
+        "/tmp/vm-backup-and-restore_beta/vm-backup-and-restore.log",
+        "/tmp/vm-backup-and-restore_beta/vm-backup-debug.log",
+        "/tmp/vm-backup-and-restore_beta/vm-restore-debug.log",
+        "/tmp/vm-backup-and-restore_beta/vm-scheduled-backup-debug.log"
     ]
 }
