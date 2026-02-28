@@ -1,7 +1,7 @@
 <?php
 function rebuild_cron() {
-    $cfg = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
-    $cronFile = '/boot/config/plugins/vm-backup-and-restore/vm-backup-and-restore.cron';
+    $cfg = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
+    $cronFile = '/boot/config/plugins/vm-backup-and-restore_beta/vm-backup-and-restore_beta.cron';
 
     if (!file_exists($cfg)) {
         file_put_contents($cronFile, "");
@@ -26,7 +26,7 @@ function rebuild_cron() {
         }
 
         $out .= $cron . " php ";
-        $out .= "/usr/local/emhttp/plugins/vm-backup-and-restore/helpers/run_schedule.php $id\n";
+        $out .= "/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/run_schedule.php $id\n";
     }
 
     file_put_contents($cronFile, $out);

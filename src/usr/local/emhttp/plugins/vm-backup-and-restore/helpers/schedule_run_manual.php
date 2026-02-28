@@ -8,7 +8,7 @@ if (!$id) {
     exit;
 }
 
-$cfg = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
+$cfg = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
 if (!file_exists($cfg)) {
     http_response_code(404);
     echo json_encode(['status' => 'error', 'message' => 'Schedules file not found']);
@@ -38,7 +38,7 @@ foreach ($settings as $k => $v) {
 $env .= 'SCHEDULE_ID="' . addslashes($id) . '" ';
 
 // Lock file
-$lockDir = '/tmp/vm-backup-and-restore';
+$lockDir = '/tmp/vm-backup-and-restore_beta';
 $lock = "$lockDir/lock.txt";
 
 if (!is_dir($lockDir)) {
@@ -58,7 +58,7 @@ if (!flock($fp, LOCK_EX | LOCK_NB)) {
     exit;
 }
 
-$script = '/usr/local/emhttp/plugins/vm-backup-and-restore/helpers/scheduled_backup.sh';
+$script = '/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/scheduled_backup.sh';
 
 if (!is_file($script) || !is_executable($script)) {
     echo json_encode(['status' => 'error', 'message' => 'Scheduled backup script missing or not executable']);

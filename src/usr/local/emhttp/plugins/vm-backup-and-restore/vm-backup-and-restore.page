@@ -6,7 +6,7 @@ Tag="icon.png"
 Markdown="false"
 ---
 <?php
-$cfgPath = '/boot/config/plugins/vm-backup-and-restore/settings.cfg';
+$cfgPath = '/boot/config/plugins/vm-backup-and-restore_beta/settings.cfg';
 
 // Define all default keys and their order
 $defaults = [
@@ -42,7 +42,7 @@ $settings = $existing;
 ?>
 
 <?php
-$restoreCfgPath = '/boot/config/plugins/vm-backup-and-restore/settings_restore.cfg';
+$restoreCfgPath = '/boot/config/plugins/vm-backup-and-restore_beta/settings_restore.cfg';
 
 // Define all default keys and their order for restore
 $restoreDefaults = [
@@ -141,7 +141,7 @@ if (file_exists("/etc/unraid-version")) {
     --primary-blue: #e6231c;
   }
 
-  .vm-backup-and-restore-wrapper {
+  .vm-backup-and-restore_beta-wrapper {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -149,7 +149,7 @@ if (file_exists("/etc/unraid-version")) {
   }
 
   /* === Each Panel (auto-sizing) === */
-  #vm-backup-and-restore-settings,
+  #vm-backup-and-restore_beta-settings,
   #log-section {
     background: #111;
     border-radius: 12px;
@@ -180,7 +180,7 @@ if (file_exists("/etc/unraid-version")) {
     padding-top: 0;
   }
 
-  #vm-backup-and-restore-settings {
+  #vm-backup-and-restore_beta-settings {
     padding-top: 0px !important;
     /* reduce from default 20px */
   }
@@ -198,7 +198,7 @@ if (file_exists("/etc/unraid-version")) {
   }
 
   /* fine-tune widths */
-  #vm-backup-and-restore-settings {
+  #vm-backup-and-restore_beta-settings {
     flex-basis: 25%;
   }
 
@@ -206,7 +206,7 @@ if (file_exists("/etc/unraid-version")) {
     flex-basis: 22%;
   }
 
-  .unraid-71 #vm-backup-and-restore-settings {
+  .unraid-71 #vm-backup-and-restore_beta-settings {
     min-height: 77vh;
     max-height: 77vh;
     overflow-y: auto;
@@ -219,7 +219,7 @@ if (file_exists("/etc/unraid-version")) {
     margin: 0;
   }
 
-  .unraid-72 #vm-backup-and-restore-settings {
+  .unraid-72 #vm-backup-and-restore_beta-settings {
     min-height: 76vh;
     max-height: 76vh;
     overflow-y: auto;
@@ -232,7 +232,7 @@ if (file_exists("/etc/unraid-version")) {
     margin: 0;
   }
 
-  #vm-backup-and-restore-settings,
+  #vm-backup-and-restore_beta-settings,
   #last-run-container {
     flex: 1 1 100%;
   }
@@ -258,11 +258,11 @@ if (file_exists("/etc/unraid-version")) {
     padding: 8px;
   }
 
-  .unraid-71 .vm-backup-and-restore-wrapper {
+  .unraid-71 .vm-backup-and-restore_beta-wrapper {
     margin-top: -31px !important;
   }
 
-  .unraid-72 .vm-backup-and-restore-wrapper {
+  .unraid-72 .vm-backup-and-restore_beta-wrapper {
     margin-top: -20px !important;
   }
 
@@ -418,7 +418,7 @@ if (file_exists("/etc/unraid-version")) {
     }
   }
 
-  #vm-backup-and-restore-settings.shake {
+  #vm-backup-and-restore_beta-settings.shake {
     animation: shake .3s;
   }
 
@@ -635,7 +635,7 @@ if (file_exists("/etc/unraid-version")) {
     background: #111;
   }
 
-  .checkbox-row label.vm-backup-and-restoretip {
+  .checkbox-row label.vm-backup-and-restore_betatip {
     display: inline-flex;
     /* shrink to content */
     align-items: center;
@@ -648,7 +648,7 @@ if (file_exists("/etc/unraid-version")) {
     margin-right: 6px;
   }
 
-  #vm-backup-and-restore-layout {
+  #vm-backup-and-restore_beta-layout {
     display: grid;
     gap: 20px;
     align-items: start;
@@ -748,7 +748,7 @@ if (file_exists("/etc/unraid-version")) {
   }
 
   /* Main 3-panel layout */
-  #vm-backup-and-restore-layout {
+  #vm-backup-and-restore_beta-layout {
     display: grid;
     grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr) minmax(420px, 1.6fr);
     gap: 20px;
@@ -757,7 +757,7 @@ if (file_exists("/etc/unraid-version")) {
     /* equal height panels */
   }
 
-  #vm-backup-and-restore-layout {
+  #vm-backup-and-restore_beta-layout {
     --plugin-bg: #1e1e1e;
     --plugin-panel: #111;
     --plugin-border: #b30000;
@@ -766,9 +766,9 @@ if (file_exists("/etc/unraid-version")) {
     --plugin-accent: #b30000;
   }
 
-  #vm-backup-and-restore-layout select,
-  #vm-backup-and-restore-layout input[type="text"],
-  #vm-backup-and-restore-layout input[type="number"] {
+  #vm-backup-and-restore_beta-layout select,
+  #vm-backup-and-restore_beta-layout input[type="text"],
+  #vm-backup-and-restore_beta-layout input[type="number"] {
     background-color: var(--plugin-panel);
     color: var(--plugin-text);
     border: 1px solid var(--plugin-border);
@@ -776,32 +776,32 @@ if (file_exists("/etc/unraid-version")) {
     padding: 6px 8px;
   }
 
-  #vm-backup-and-restore-layout label {
+  #vm-backup-and-restore_beta-layout label {
     color: var(--primary-blue);
   }
 
-  #vm-backup-and-restore-layout input[type="checkbox"] {
+  #vm-backup-and-restore_beta-layout input[type="checkbox"] {
     accent-color: var(--plugin-accent);
   }
 
-  #vm-backup-and-restore-layout select option {
+  #vm-backup-and-restore_beta-layout select option {
     background-color: var(--plugin-panel);
     color: var(--plugin-text);
   }
 
-  #vm-backup-and-restore-layout select:hover,
-  #vm-backup-and-restore-layout input:hover {
+  #vm-backup-and-restore_beta-layout select:hover,
+  #vm-backup-and-restore_beta-layout input:hover {
     border-color: var(--plugin-accent);
   }
 
-  #vm-backup-and-restore-layout select option:hover,
-  #vm-backup-and-restore-layout select option:focus {
+  #vm-backup-and-restore_beta-layout select option:hover,
+  #vm-backup-and-restore_beta-layout select option:focus {
     background-color: #e6231c;
     color: #ffffff;
   }
 
-  #vm-backup-and-restore-layout select:disabled,
-  #vm-backup-and-restore-layout input:disabled {
+  #vm-backup-and-restore_beta-layout select:disabled,
+  #vm-backup-and-restore_beta-layout input:disabled {
     background-color: #111;
     color: var(--plugin-muted);
     border-color: #b30000;
@@ -809,30 +809,30 @@ if (file_exists("/etc/unraid-version")) {
   }
 
   @media (max-width: 1200px) {
-    #vm-backup-and-restore-layout {
+    #vm-backup-and-restore_beta-layout {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (max-width: 800px) {
-    #vm-backup-and-restore-layout {
+    #vm-backup-and-restore_beta-layout {
       grid-template-columns: 1fr;
     }
   }
 
   @media (max-width: 1100px) {
-    #vm-backup-and-restore-layout {
+    #vm-backup-and-restore_beta-layout {
       grid-template-columns: 1fr;
     }
   }
 
-  #vm-backup-and-restore-settings h2,
-  #vm-backup-and-restore-settings h3 {
+  #vm-backup-and-restore_beta-settings h2,
+  #vm-backup-and-restore_beta-settings h3 {
     margin-top: 0;
     margin-bottom: 12px;
   }
 
-  #vm-backup-and-restore-settings {
+  #vm-backup-and-restore_beta-settings {
     padding-top: 16px !important;
   }
 
@@ -884,7 +884,7 @@ if (file_exists("/etc/unraid-version")) {
 </style>
 
 <?php
-$plg = "/boot/config/plugins/vm-backup-and-restore.plg";
+$plg = "/boot/config/plugins/vm-backup-and-restore_beta.plg";
 $version = "unknown";
 
 if (is_file($plg)) {
@@ -895,24 +895,24 @@ if (is_file($plg)) {
 }
 ?>
 
-<div id="vm-backup-and-restore-layout">
-  <div class="vm-backup-and-restore-wrapper">
-    <form id="vm-backup-and-restore-settings">
+<div id="vm-backup-and-restore_beta-layout">
+  <div class="vm-backup-and-restore_beta-wrapper">
+    <form id="vm-backup-and-restore_beta-settings">
 
       <div class="status-row"><span title="Shows which part of the backup process is currently running"
-          class="vm-backup-and-restoretip status-label">Status:</span><span id="status-text">No Backup Running</span>
+          class="vm-backup-and-restore_betatip status-label">Status:</span><span id="status-text">No Backup Running</span>
       </div>
       <br>
 
       <!-- VM -->
       <div class="form-pair">
         <label>
-          <span class="vm-backup-and-restoretip" title="Choose which VM(s) to backup">
+          <span class="vm-backup-and-restore_betatip" title="Choose which VM(s) to backup">
             VM(s) To Backup:
           </span>
         </label>
 
-        <div id="vm-dropdown" class="vm-multiselect vm-backup-and-restoretip" title="Choose which VM(s) to backup"
+        <div id="vm-dropdown" class="vm-multiselect vm-backup-and-restore_betatip" title="Choose which VM(s) to backup"
           data-selected="<?php echo htmlspecialchars($settings['VMS_TO_BACKUP'] ?? '') ?>">
           <div class="vm-dropdown-label">Select VM(s)</div>
           <div class="vm-dropdown-list"></div>
@@ -926,13 +926,13 @@ if (is_file($plg)) {
       <!-- DESTINATION -->
       <div class="form-pair">
         <label>
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Choose destination for backup. Each VM will be saved to a subdirectory with the name the same as the VM">
             Backup Destination:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip"
+        <span class="vm-backup-and-restore_betatip"
           title="Choose destination for backup. Each VM will be saved to a subdirectory with the name the same as the VM">
           <input type="text" id="backup_destination" name="BACKUP_DESTINATION"
             data-picker-title="Select Backup Destination" placeholder="Click here" readonly style="cursor:pointer;"
@@ -944,13 +944,13 @@ if (is_file($plg)) {
       <div class="form-pair">
         <label for="backups_to_keep">
           <span title="Choose the amount of backups to keep for each of the VMs selected"
-            class="vm-backup-and-restoretip">
+            class="vm-backup-and-restore_betatip">
             Backups To Keep:
           </span>
         </label>
 
         <span title="Choose the amount of backups to keep for each of the VMs selected"
-          class="vm-backup-and-restoretip">
+          class="vm-backup-and-restore_betatip">
           <select id="backups_to_keep" class="short-input" name="BACKUPS_TO_KEEP">
             <?php
         $current = $settings['BACKUPS_TO_KEEP'] ?? 0;
@@ -974,13 +974,13 @@ if (is_file($plg)) {
       <!-- BACKUP OWNER -->
       <div class="form-pair">
         <label>
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Choose the owner for the backup if you wanted it owned by one of your created users">
             Backup Owner:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip"
+        <span class="vm-backup-and-restore_betatip"
           title="Choose the owner for the backup if you wanted it owned by one of your created users">
           <select id="backup_owner" name="BACKUP_OWNER"
             data-selected="<?php echo htmlspecialchars($settings['BACKUP_OWNER'] ?? 'nobody'); ?>">
@@ -991,12 +991,12 @@ if (is_file($plg)) {
       <!-- DRY RUN -->
       <div class="form-pair">
         <label for="dry_run">
-          <span class="vm-backup-and-restoretip" title="Enable to simulate a backup">
+          <span class="vm-backup-and-restore_betatip" title="Enable to simulate a backup">
             Dry Run:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip" title="Enable to simulate a backup">
+        <span class="vm-backup-and-restore_betatip" title="Enable to simulate a backup">
           <select id="dry_run" class="short-input" name="DRY_RUN">
             <option value="yes" <?=(($settings['DRY_RUN'] ?? 'no' )==='yes' ) ? 'selected' : '' ?>>
               Yes
@@ -1011,13 +1011,13 @@ if (is_file($plg)) {
       <!-- NOTIFICATIONS -->
       <div class="form-pair">
         <label for="notifications">
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Send Unraid system notifications when VM backup starts and finishes">
             Notifications:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip"
+        <span class="vm-backup-and-restore_betatip"
           title="Send Unraid system notifications when VM backup starts and finishes">
           <select id="notifications" class="short-input" name="NOTIFICATIONS">
             <option value="yes" <?=(($settings['NOTIFICATIONS'] ?? 'no' )==='yes' ) ? 'selected' : '' ?>>
@@ -1033,13 +1033,13 @@ if (is_file($plg)) {
       <!-- DISCORD WEBHOOK URL -->
       <div class="form-pair" id="discord-webhook-row" style="display:none;">
         <label for="discord_webhook_url">
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Enter your Discord webhook URL to send notifications to Discord instead of Unraid">
             Webhook URL:
           </span>
         </label>
         <div class="input-wrapper">
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Enter your Discord webhook URL to send notifications to Discord instead of Unraid">
             <input type="text" id="discord_webhook_url" name="DISCORD_WEBHOOK_URL" class="short-input"
               placeholder="Webhook URL" value="<?php echo htmlspecialchars($settings['DISCORD_WEBHOOK_URL'] ?? ''); ?>">
@@ -1052,12 +1052,12 @@ if (is_file($plg)) {
       <!-- PUSHOVER USER KEY -->
       <div class="form-pair" id="pushover-user-key-row" style="display:none;">
         <label for="pushover_user_key">
-          <span class="vm-backup-and-restoretip" title="Your Pushover user key from pushover.net/dashboard">
+          <span class="vm-backup-and-restore_betatip" title="Your Pushover user key from pushover.net/dashboard">
             Pushover User Key:
           </span>
         </label>
         <div class="input-wrapper">
-          <span class="vm-backup-and-restoretip" title="Your Pushover user key from pushover.net/dashboard">
+          <span class="vm-backup-and-restore_betatip" title="Your Pushover user key from pushover.net/dashboard">
             <input type="text" id="pushover_user_key" name="PUSHOVER_USER_KEY" class="short-input"
               placeholder="user key from pushover.net"
               value="<?php echo htmlspecialchars($settings['PUSHOVER_USER_KEY'] ?? ''); ?>">
@@ -1070,12 +1070,12 @@ if (is_file($plg)) {
       <!-- Scheduling Selection -->
       <div class="form-pair" id="cron-expression-row">
         <label for="cron_mode">
-          <span class="vm-backup-and-restoretip" title="Select scheduling selection">
+          <span class="vm-backup-and-restore_betatip" title="Select scheduling selection">
             Scheduling:
           </span>
         </label>
         <div class="input-wrapper">
-          <span class="vm-backup-and-restoretip" title="Select scheduling selection">
+          <span class="vm-backup-and-restore_betatip" title="Select scheduling selection">
             <select id="cron_mode" name="CRON_MODE" class="short-input">
               <option value="minutes" <?php echo (($settings['CRON_MODE'] ?? '' )==='minutes' ) ? 'selected' : '' ; ?>
                 >Minutes</option>
@@ -1099,12 +1099,12 @@ if (is_file($plg)) {
       <div id="minutes-options" style="display:none; margin-top:10px;">
         <div class="form-pair">
           <label for="minutes_frequency">
-            <span class="vm-backup-and-restoretip" title="Select minute frequency">
+            <span class="vm-backup-and-restore_betatip" title="Select minute frequency">
               Select Frequency:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select minute frequency">
+            <span class="vm-backup-and-restore_betatip" title="Select minute frequency">
 
               <?php
           // --- Normalize MINUTES_FREQUENCY before rendering ---
@@ -1135,12 +1135,12 @@ if (is_file($plg)) {
       <div id="hourly-options" style="display:none; margin-top:10px;">
         <div class="form-pair">
           <label for="hourly_frequency">
-            <span class="vm-backup-and-restoretip" title="Select hourly frequency">
+            <span class="vm-backup-and-restore_betatip" title="Select hourly frequency">
               Select Frequency:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select hourly frequency">
+            <span class="vm-backup-and-restore_betatip" title="Select hourly frequency">
               <select id="hourly_frequency" name="HOURLY_FREQUENCY" class="short-input">
                 <?php
           for ($i = 1; $i <= 23; $i++) {
@@ -1158,12 +1158,12 @@ if (is_file($plg)) {
       <div id="daily-options" style="display:none; margin-top:10px;">
         <div class="form-pair">
           <label for="daily_time">
-            <span class="vm-backup-and-restoretip" title="Select the hour for daily execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the hour for daily execution">
               Hour:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select the hour for daily execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the hour for daily execution">
               <select id="daily_time" name="DAILY_TIME" class="short-input">
                 <?php for ($h = 0; $h < 24; $h++):
                 $hour = str_pad($h, 2, "0", STR_PAD_LEFT); ?>
@@ -1178,12 +1178,12 @@ if (is_file($plg)) {
         </div>
         <div class="form-pair">
           <label for="daily_minute">
-            <span class="vm-backup-and-restoretip" title="Select the minute for daily execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the minute for daily execution">
               Minute:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select the minute for daily execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the minute for daily execution">
               <select id="daily_minute" name="DAILY_MINUTE" class="short-input">
                 <?php for ($m = 0; $m < 60; $m++):
                 $min = str_pad($m, 2, "0", STR_PAD_LEFT); ?>
@@ -1202,12 +1202,12 @@ if (is_file($plg)) {
       <div id="weekly-options" style="display:none; margin-top:10px;">
         <div class="form-pair">
           <label for="weekly_day">
-            <span class="vm-backup-and-restoretip" title="Select day of the week">
+            <span class="vm-backup-and-restore_betatip" title="Select day of the week">
               Day Of Week:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select day of the week">
+            <span class="vm-backup-and-restore_betatip" title="Select day of the week">
               <select id="weekly_day" name="WEEKLY_DAY" class="short-input">
                 <?php 
             $days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -1223,12 +1223,12 @@ if (is_file($plg)) {
         </div>
         <div class="form-pair">
           <label for="weekly_time">
-            <span class="vm-backup-and-restoretip" title="Select the hour for weekly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the hour for weekly execution">
               Hour:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select the hour for weekly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the hour for weekly execution">
               <select id="weekly_time" name="WEEKLY_TIME" class="short-input">
                 <?php for ($h = 0; $h < 24; $h++):
                 $hour = str_pad($h, 2, "0", STR_PAD_LEFT); ?>
@@ -1243,12 +1243,12 @@ if (is_file($plg)) {
         </div>
         <div class="form-pair">
           <label for="weekly_minute">
-            <span class="vm-backup-and-restoretip" title="Select the minute for weekly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the minute for weekly execution">
               Minute:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select the minute for weekly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the minute for weekly execution">
               <select id="weekly_minute" name="WEEKLY_MINUTE" class="short-input">
                 <?php for ($m = 0; $m < 60; $m++):
                 $min = str_pad($m, 2, "0", STR_PAD_LEFT); ?>
@@ -1267,12 +1267,12 @@ if (is_file($plg)) {
       <div id="monthly-options" style="display:none; margin-top:10px;">
         <div class="form-pair">
           <label for="monthly_day">
-            <span class="vm-backup-and-restoretip" title="Select day of the month">
+            <span class="vm-backup-and-restore_betatip" title="Select day of the month">
               Day Of Month:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select day of the month">
+            <span class="vm-backup-and-restore_betatip" title="Select day of the month">
               <select id="monthly_day" name="MONTHLY_DAY" class="short-input">
                 <?php for ($d = 1; $d <= 31; $d++): 
             $day = str_pad($d, 2, "0", STR_PAD_LEFT); ?>
@@ -1287,12 +1287,12 @@ if (is_file($plg)) {
         </div>
         <div class="form-pair">
           <label for="monthly_time">
-            <span class="vm-backup-and-restoretip" title="Select the hour for monthly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the hour for monthly execution">
               Hour:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select the hour for monthly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the hour for monthly execution">
               <select id="monthly_time" name="MONTHLY_TIME" class="short-input">
                 <?php for ($h = 0; $h < 24; $h++):
                 $hour = str_pad($h, 2, "0", STR_PAD_LEFT); ?>
@@ -1307,12 +1307,12 @@ if (is_file($plg)) {
         </div>
         <div class="form-pair">
           <label for="monthly_minute">
-            <span class="vm-backup-and-restoretip" title="Select the minute for monthly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the minute for monthly execution">
               Minute:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip" title="Select the minute for monthly execution">
+            <span class="vm-backup-and-restore_betatip" title="Select the minute for monthly execution">
               <select id="monthly_minute" name="MONTHLY_MINUTE" class="short-input">
                 <?php for ($m = 0; $m < 60; $m++):
                 $min = str_pad($m, 2, "0", STR_PAD_LEFT); ?>
@@ -1331,13 +1331,13 @@ if (is_file($plg)) {
       <div id="custom-options" style="display:none; margin-top:10px;">
         <div class="form-pair">
           <label for="custom_cron">
-            <span class="vm-backup-and-restoretip"
+            <span class="vm-backup-and-restore_betatip"
               title="Enter a valid cron expression 5 fields with spaces between each for example */2 * * * * visit https://crontab.guru for help">
               Cron Expression:
             </span>
           </label>
           <div class="input-wrapper">
-            <span class="vm-backup-and-restoretip"
+            <span class="vm-backup-and-restore_betatip"
               title="Enter a valid cron expression 5 fields with spaces between each for example */2 * * * * visit https://crontab.guru for help">
               <input type="text" id="custom_cron" name="CUSTOM_CRON" class="short-input" placeholder="*/2 * * * *"
                 value="<?php echo htmlspecialchars($settings['CUSTOM_CRON'] ?? ''); ?>">
@@ -1368,16 +1368,16 @@ if (is_file($plg)) {
 
       <!-- Backup and Schedule It Button-->
       <div class="backup-actions">
-        <span title="Run backup of selected VM(s)" class="vm-backup-and-restoretip">
+        <span title="Run backup of selected VM(s)" class="vm-backup-and-restore_betatip">
           <button type="button" id="backupbtn">Backup Now</button>
         </span>
 
-        <span class="vm-backup-and-restoretip"
+        <span class="vm-backup-and-restore_betatip"
           data-tooltip="Create a backup schedule using the settings shown in the fields above">
           <button type="button" id="schedule-backup" class="button schedule-button">Schedule It</button>
         </span>
 
-        <span title="Cancel editing of schedule" class="vm-backup-and-restoretip">
+        <span title="Cancel editing of schedule" class="vm-backup-and-restore_betatip">
           <button type="button" id="cancelEditBtn" style="display:none;">Cancel</button>
         </span>
       </div>
@@ -1387,23 +1387,23 @@ if (is_file($plg)) {
     </form>
   </div>
 
-  <div class="vm-backup-and-restore-wrapper">
-    <form id="vm-backup-and-restore-settings">
+  <div class="vm-backup-and-restore_beta-wrapper">
+    <form id="vm-backup-and-restore_beta-settings">
 
       <div class="restore-status-row"><span title="Shows which part of the restore process is currently running"
-          class="vm-backup-and-restoretip restore-status-label">Status:</span><span id="restore-status-text">No Restore
+          class="vm-backup-and-restore_betatip restore-status-label">Status:</span><span id="restore-status-text">No Restore
           Running</span></div>
       <br>
 
       <!-- LOCATION -->
       <div class="form-pair">
         <label>
-          <span class="vm-backup-and-restoretip" title="Choose location where backups are located">
+          <span class="vm-backup-and-restore_betatip" title="Choose location where backups are located">
             Location Of Backups:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip" title="Choose location where backups are located">
+        <span class="vm-backup-and-restore_betatip" title="Choose location where backups are located">
           <input type="text" id="location_of_backups" name="LOCATION_OF_BACKUPS"
             data-picker-title="Select Location Of Backups" placeholder="Click here" readonly style="cursor:pointer;"
             value="<?php echo htmlspecialchars($restoreSettings['LOCATION_OF_BACKUPS'] ?? ''); ?>">
@@ -1413,12 +1413,12 @@ if (is_file($plg)) {
       <!-- VM RESTORE -->
       <div class="form-pair">
         <label>
-          <span class="vm-backup-and-restoretip" title="Choose which VM(s) to restore">
+          <span class="vm-backup-and-restore_betatip" title="Choose which VM(s) to restore">
             VM(s) To Restore:
           </span>
         </label>
 
-        <div id="vm-dropdown-restore" class="vm-multiselect vm-backup-and-restoretip"
+        <div id="vm-dropdown-restore" class="vm-multiselect vm-backup-and-restore_betatip"
           title="Choose which VM(s) to restore"
           data-selected="<?php echo htmlspecialchars($restoreSettings['VMS_TO_RESTORE'] ?? '') ?>">
 
@@ -1437,12 +1437,12 @@ if (is_file($plg)) {
       <!-- RESTORE DESTINATION -->
       <div class="form-pair">
         <label>
-          <span class="vm-backup-and-restoretip" title="Choose destination to restore VM(s)">
+          <span class="vm-backup-and-restore_betatip" title="Choose destination to restore VM(s)">
             Restore Destination:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip" title="Choose destination to restore VM(s)">
+        <span class="vm-backup-and-restore_betatip" title="Choose destination to restore VM(s)">
           <input type="text" id="restore_destination" name="RESTORE_DESTINATION"
             data-picker-title="Select Restore Destination" placeholder="Click here" readonly style="cursor:pointer;"
             value="<?php echo htmlspecialchars($restoreSettings['RESTORE_DESTINATION'] ?? ''); ?>">
@@ -1452,12 +1452,12 @@ if (is_file($plg)) {
       <!-- DRY RUN RESTORE -->
       <div class="form-pair">
         <label for="dry_run_restore">
-          <span class="vm-backup-and-restoretip" title="Enable to simulate a restore">
+          <span class="vm-backup-and-restore_betatip" title="Enable to simulate a restore">
             Dry Run:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip" title="Enable to simulate a restore">
+        <span class="vm-backup-and-restore_betatip" title="Enable to simulate a restore">
           <select id="dry_run_restore" class="short-input" name="DRY_RUN_RESTORE">
             <option value="yes" <?=(($restoreSettings['DRY_RUN_RESTORE'] ?? 'no' )==='yes' ) ? 'selected' : '' ?>>
               Yes
@@ -1472,13 +1472,13 @@ if (is_file($plg)) {
       <!-- NOTIFICATIONS RESTORE -->
       <div class="form-pair">
         <label for="notifications_restore">
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Send Unraid system notifications when VM restore starts and finishes">
             Notifications:
           </span>
         </label>
 
-        <span class="vm-backup-and-restoretip"
+        <span class="vm-backup-and-restore_betatip"
           title="Send Unraid system notifications when VM restore starts and finishes">
           <select id="notifications_restore" class="short-input" name="NOTIFICATIONS_RESTORE">
             <option value="yes" <?=(($restoreSettings['NOTIFICATIONS_RESTORE'] ?? 'no' )==='yes' ) ? 'selected' : '' ?>>
@@ -1494,13 +1494,13 @@ if (is_file($plg)) {
       <!-- DISCORD WEBHOOK URL RESTORE -->
       <div class="form-pair" id="discord-webhook-row-restore" style="display:none;">
         <label for="discord_webhook_url_restore">
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Enter your webhook URL to send notifications to instead of Unraid">
             Webhook URL:
           </span>
         </label>
         <div class="input-wrapper">
-          <span class="vm-backup-and-restoretip"
+          <span class="vm-backup-and-restore_betatip"
             title="Enter your webhook URL to send notifications to instead of Unraid">
             <input type="text" id="discord_webhook_url_restore" name="DISCORD_WEBHOOK_URL_RESTORE" class="short-input"
               placeholder="Webhook URL"
@@ -1514,12 +1514,12 @@ if (is_file($plg)) {
       <!-- PUSHOVER USER KEY RESTORE -->
       <div class="form-pair" id="pushover-user-key-row-restore" style="display:none;">
         <label for="pushover_user_key_restore">
-          <span class="vm-backup-and-restoretip" title="Your Pushover user key from pushover.net/dashboard">
+          <span class="vm-backup-and-restore_betatip" title="Your Pushover user key from pushover.net/dashboard">
             Pushover User Key:
           </span>
         </label>
         <div class="input-wrapper">
-          <span class="vm-backup-and-restoretip" title="Your Pushover user key from pushover.net/dashboard">
+          <span class="vm-backup-and-restore_betatip" title="Your Pushover user key from pushover.net/dashboard">
             <input type="text" id="pushover_user_key_restore" name="PUSHOVER_USER_KEY_RESTORE" class="short-input"
               placeholder="user key from pushover.net"
               value="<?php echo htmlspecialchars($restoreSettings['PUSHOVER_USER_KEY_RESTORE'] ?? ''); ?>">
@@ -1535,7 +1535,7 @@ if (is_file($plg)) {
 
       <!-- Restore Button-->
       <div class="form-group">
-        <span title="Run restore of selected VM(s)" class="vm-backup-and-restoretip">
+        <span title="Run restore of selected VM(s)" class="vm-backup-and-restore_betatip">
           <button type="button" id="restorebtn">Restore Now</button>
         </span>
       </div>
@@ -1549,12 +1549,12 @@ if (is_file($plg)) {
     <form id="log-section-form">
 
       <div class="log-header-row">
-        <span title="Clear the vm backup and restore log" class="vm-backup-and-restoretip">
+        <span title="Clear the vm backup and restore log" class="vm-backup-and-restore_betatip">
           <button type="button" id="clear-last-run-log">Clear Log</button>
         </span>
 
         <div id="logtoast">Log copied</div>
-        <span title="Copy vm backup and restore log to clipboard" class="vm-backup-and-restoretip">
+        <span title="Copy vm backup and restore log to clipboard" class="vm-backup-and-restore_betatip">
           <button type="button" id="copy-last-run-log">Copy</button>
         </span>
       </div>
@@ -1593,7 +1593,7 @@ if (is_file($plg)) {
 </div>
 
 <script>
-  $(document).on('mouseenter', '.vm-backup-and-restoretip', function () {
+  $(document).on('mouseenter', '.vm-backup-and-restore_betatip', function () {
     const $el = $(this);
 
     if (!$el.hasClass('tooltipstered')) {
@@ -1744,7 +1744,7 @@ if (is_file($plg)) {
   }
 
   function updateBackupStatus() {
-    fetch('/plugins/vm-backup-and-restore/helpers/backup_status_check.php')
+    fetch('/plugins/vm-backup-and-restore_beta/helpers/backup_status_check.php')
       .then(res => res.json())
       .then(data => {
         document.getElementById('status-text').textContent = data.status;
@@ -1758,7 +1758,7 @@ if (is_file($plg)) {
   setInterval(updateBackupStatus, 1000);
 
   function updateRestoreStatus() {
-    fetch('/plugins/vm-backup-and-restore/helpers/restore_status_check.php')
+    fetch('/plugins/vm-backup-and-restore_beta/helpers/restore_status_check.php')
       .then(res => res.json())
       .then(data => {
         document.getElementById('restore-status-text').textContent = data.status;
@@ -1878,7 +1878,7 @@ if (is_file($plg)) {
   })();
 
   function loadLastRunLog() {
-    fetch('/plugins/vm-backup-and-restore/helpers/fetch_last_run_log.php')
+    fetch('/plugins/vm-backup-and-restore_beta/helpers/fetch_last_run_log.php')
       .then(res => res.text())
       .then(data => { document.getElementById('last-run-log').textContent = data || 'Backup & restore log not found'; })
       .catch(() => { document.getElementById('last-run-log').textContent = 'Error loading backup & restore log.'; });
@@ -1892,7 +1892,7 @@ if (is_file($plg)) {
   if (clearLastRunBtn) {
     clearLastRunBtn.addEventListener("click", function () {
       if (confirm("Are you sure you want to clear the backup & restore Log?")) {
-        fetch("/plugins/vm-backup-and-restore/helpers/clear_log.php", {
+        fetch("/plugins/vm-backup-and-restore_beta/helpers/clear_log.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1928,7 +1928,7 @@ if (is_file($plg)) {
     const select = $('#backup_owner');
     const selected = select.data('selected') || 'nobody';
 
-    $.getJSON('/plugins/vm-backup-and-restore/helpers/list_users_group100.php', function (data) {
+    $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/list_users_group100.php', function (data) {
       select.empty();
 
       data.users.forEach(user => {
@@ -2009,7 +2009,7 @@ if (is_file($plg)) {
           .map(s => s.trim())
           .filter(Boolean);
 
-      $.getJSON('/plugins/vm-backup-and-restore/helpers/list_vms.php', function (data) {
+      $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/list_vms.php', function (data) {
         listBackup.empty();
 
         if (!data.vms || data.vms.length === 0) {
@@ -2066,7 +2066,7 @@ if (is_file($plg)) {
 
   // Force-close any Dynamix tooltip when dropdown opens
   function closeTooltips() {
-    $('.vm-backup-and-restoretip').trigger('mouseleave');
+    $('.vm-backup-and-restore_betatip').trigger('mouseleave');
   }
 
   $('.vm-dropdown-label, .vm-dropdown-list, select, .custom-dropdown').on('click', function () {
@@ -2095,7 +2095,7 @@ if (is_file($plg)) {
 
     selected.forEach(vm => {
       $.getJSON(
-        '/plugins/vm-backup-and-restore/helpers/get_vm_versions.php',
+        '/plugins/vm-backup-and-restore_beta/helpers/get_vm_versions.php',
         { vm, restore_path: restorePath },
         function (versions) {
 
@@ -2107,11 +2107,11 @@ if (is_file($plg)) {
           const wrapper = $(`
           <div class="form-pair version-field">
             <label>
-              <span class="vm-backup-and-restoretip" title="Choose which version of ${vm} to restore">
+              <span class="vm-backup-and-restore_betatip" title="Choose which version of ${vm} to restore">
                 Version for ${vm}:
               </span>
             </label>
-            <span class="vm-backup-and-restoretip" title="Choose which version of ${vm} to restore">
+            <span class="vm-backup-and-restore_betatip" title="Choose which version of ${vm} to restore">
               <select name="VERSION_${vm}" class="version-select" data-vm="${vm}"></select>
             </span>
           </div>
@@ -2191,7 +2191,7 @@ if (is_file($plg)) {
         return;
       }
 
-      $.getJSON('/plugins/vm-backup-and-restore/helpers/list_restore_folders.php',
+      $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/list_restore_folders.php',
         { restore_path: restorePath },
         function (data) {
 
@@ -2426,7 +2426,7 @@ if (is_file($plg)) {
   }
 
   function pollBackupStatus() {
-    $.getJSON('/plugins/vm-backup-and-restore/helpers/backup_status.php', function (res) {
+    $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/backup_status.php', function (res) {
       backupRunning = res.running === true;
       updateBackupButtonState();
       updateBackupUI(res.running);
@@ -2441,7 +2441,7 @@ if (is_file($plg)) {
 
   // Force-close any Dynamix tooltip
   function closeTooltips() {
-    $('.vm-backup-and-restoretip').trigger('mouseleave');
+    $('.vm-backup-and-restore_betatip').trigger('mouseleave');
   }
 
   // When your dropdown opens, close tooltips
@@ -2453,7 +2453,7 @@ if (is_file($plg)) {
 
   async function fetchVdiskPaths(vmList) {
     return $.ajax({
-      url: '/plugins/vm-backup-and-restore/helpers/get_vdisk_paths.php',
+      url: '/plugins/vm-backup-and-restore_beta/helpers/get_vdisk_paths.php',
       method: 'POST',
       data: { vms: vmList },
       dataType: 'json'
@@ -2462,7 +2462,7 @@ if (is_file($plg)) {
 
   async function resolvePathServer(p) {
     try {
-      const res = await fetch('/plugins/vm-backup-and-restore/helpers/resolve_path.php', {
+      const res = await fetch('/plugins/vm-backup-and-restore_beta/helpers/resolve_path.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'path=' + encodeURIComponent(p) + '&csrf_token=' + encodeURIComponent(csrfToken)
@@ -2487,7 +2487,7 @@ if (is_file($plg)) {
   $('#backupbtn').on('click', async function () {
 
     if ($('#backupbtn').text() === 'Stop') {
-      $.post('/plugins/vm-backup-and-restore/helpers/stop_backup.php')
+      $.post('/plugins/vm-backup-and-restore_beta/helpers/stop_backup.php')
         .done(function () {
           console.log('Stop signal sent.');
           showPopup('Stop requested. Backup stopping');
@@ -2570,7 +2570,7 @@ if (is_file($plg)) {
       csrf_token: csrfToken
     });
 
-    $.get('/plugins/vm-backup-and-restore/helpers/save_settings.php?' + params)
+    $.get('/plugins/vm-backup-and-restore_beta/helpers/save_settings.php?' + params)
       .done(function (res) {
 
         if (res && res.status === 'ok') {
@@ -2590,7 +2590,7 @@ if (is_file($plg)) {
   });
 
   function startBackup() {
-    $.get('/plugins/vm-backup-and-restore/helpers/backup.php', {
+    $.get('/plugins/vm-backup-and-restore_beta/helpers/backup.php', {
       csrf_token: csrfToken
     })
       .done(function (res) {
@@ -2687,7 +2687,7 @@ if (is_file($plg)) {
   }
 
   async function fetchExistingCrons() {
-    return $.getJSON('/plugins/vm-backup-and-restore/helpers/schedule_cron_check.php');
+    return $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/schedule_cron_check.php');
   }
 
   // --- Global variable to track editing ---
@@ -2698,7 +2698,7 @@ if (is_file($plg)) {
     if (scheduleUILocked && !force) return $.Deferred().resolve().promise();
 
     return $.get(
-      '/plugins/vm-backup-and-restore/helpers/schedule_list.php',
+      '/plugins/vm-backup-and-restore_beta/helpers/schedule_list.php',
       function (html) {
         $('#schedule-list').html(html);
       }
@@ -2837,7 +2837,7 @@ if (is_file($plg)) {
 
     $.ajax({
       type: 'POST',
-      url: `/plugins/vm-backup-and-restore/helpers/${url}`,
+      url: `/plugins/vm-backup-and-restore_beta/helpers/${url}`,
       data: {
         id: window.editingScheduleId,
         type: type,
@@ -2867,7 +2867,7 @@ if (is_file($plg)) {
     if (scheduleUILocked) return;   // prevent double‑clicks during reload
     lockScheduleUI();               // freeze all schedule action buttons
 
-    $.getJSON('/plugins/vm-backup-and-restore/helpers/schedule_load.php', { id }, function (s) {
+    $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/schedule_load.php', { id }, function (s) {
       const settings = s.SETTINGS || {};
 
       // Apply schedule type first
@@ -2972,7 +2972,7 @@ if (is_file($plg)) {
     lockScheduleUI();               // freeze all schedule action buttons
 
     $.post(
-      '/plugins/vm-backup-and-restore/helpers/schedule_delete.php',
+      '/plugins/vm-backup-and-restore_beta/helpers/schedule_delete.php',
       { id: id }
     ).always(() => {
       loadSchedules(true);
@@ -2995,7 +2995,7 @@ if (is_file($plg)) {
 
     btn.textContent = "Running";
 
-    $.post('/plugins/vm-backup-and-restore/helpers/run_schedule.php', { id })
+    $.post('/plugins/vm-backup-and-restore_beta/helpers/run_schedule.php', { id })
       .done(function (res) {
         if (!res.started) {
           alert("Failed to start backup");
@@ -3017,7 +3017,7 @@ if (is_file($plg)) {
         btn.removeAttribute('title');
 
         btn.onclick = function () {
-          $.post('/plugins/vm-backup-and-restore/helpers/stop_backup.php')
+          $.post('/plugins/vm-backup-and-restore_beta/helpers/stop_backup.php')
             .done(function () {
               console.log('Stop signal sent');
               showPopup('Stop requested. Backup stopping');
@@ -3029,7 +3029,7 @@ if (is_file($plg)) {
 
         // Poll lock
         const poll = setInterval(function () {
-          $.getJSON('/plugins/vm-backup-and-restore/helpers/check_lock.php', function (data) {
+          $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/check_lock.php', function (data) {
             if (!data.locked) {
               clearInterval(poll);
 
@@ -3068,7 +3068,7 @@ if (is_file($plg)) {
     lockScheduleUI();               // freeze all schedule action buttons
 
     $.post(
-      '/plugins/vm-backup-and-restore/helpers/schedule_toggle.php',
+      '/plugins/vm-backup-and-restore_beta/helpers/schedule_toggle.php',
       { id: id }
     ).always(() => {
       loadSchedules(true);
@@ -3166,7 +3166,7 @@ if (is_file($plg)) {
   }
 
   function pollRestoreStatus() {
-    $.getJSON('/plugins/vm-backup-and-restore/helpers/restore_status.php', function (res) {
+    $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/restore_status.php', function (res) {
       updateRestoreUI(res.running);
     });
   }
@@ -3179,7 +3179,7 @@ if (is_file($plg)) {
 
   // Force-close any Dynamix tooltip
   function closeTooltips() {
-    $('.vm-backup-and-restoretip').trigger('mouseleave');
+    $('.vm-backup-and-restore_betatip').trigger('mouseleave');
   }
 
   // When your dropdown opens, close tooltips
@@ -3216,7 +3216,7 @@ if (is_file($plg)) {
   $('#restorebtn').on('click', async function () {
 
     if ($('#restorebtn').text() === 'Stop') {
-      $.post('/plugins/vm-backup-and-restore/helpers/stop_restore.php')
+      $.post('/plugins/vm-backup-and-restore_beta/helpers/stop_restore.php')
         .done(function () {
           console.log('Stop restore signal sent');
           showPopuprestore('Stop requested. Restore stopping');
@@ -3290,7 +3290,7 @@ if (is_file($plg)) {
 
     // Save settings first
     $.get(
-      '/plugins/vm-backup-and-restore/helpers/save_settings_restore.php?' + params
+      '/plugins/vm-backup-and-restore_beta/helpers/save_settings_restore.php?' + params
     )
       .done(function (res) {
         if (res && res.status === 'ok') {
@@ -3309,7 +3309,7 @@ if (is_file($plg)) {
   });
 
   function startRestore() {
-    $.get('/plugins/vm-backup-and-restore/helpers/restore.php', {
+    $.get('/plugins/vm-backup-and-restore_beta/helpers/restore.php', {
       csrf_token: csrfToken
     })
       .done(function (res) {
@@ -3325,7 +3325,7 @@ if (is_file($plg)) {
   }
 
   if (typeof caPluginUpdateCheck === "function") {
-    caPluginUpdateCheck("vm-backup-and-restore.plg", { name: "vm-backup-and-restore" });
+    caPluginUpdateCheck("vm-backup-and-restore_beta.plg", { name: "vm-backup-and-restore_beta" });
   }
 
 </script>
@@ -3340,7 +3340,7 @@ if (is_file($plg)) {
       csrf_token: csrf_token
     });
 
-    fetch('/plugins/vm-backup-and-restore/helpers/resolve_path.php', {
+    fetch('/plugins/vm-backup-and-restore_beta/helpers/resolve_path.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params.toString()
@@ -3363,7 +3363,7 @@ if (is_file($plg)) {
 
   function loadFolders(path) {
 
-    $.getJSON('/plugins/vm-backup-and-restore/helpers/list_folders.php',
+    $.getJSON('/plugins/vm-backup-and-restore_beta/helpers/list_folders.php',
       {
         path: path,
         field: activeInputFieldId
@@ -3528,7 +3528,7 @@ if (is_file($plg)) {
     const name = $('#newFolderName').val().trim();
     if (!name) return;
 
-    $.post('/plugins/vm-backup-and-restore/helpers/create_folder.php',
+    $.post('/plugins/vm-backup-and-restore_beta/helpers/create_folder.php',
       { path: currentPath, name: name, csrf_token: csrf_token },
       function (res) {
         if (res.success) {
@@ -3606,7 +3606,7 @@ if (is_file($plg)) {
 
     async function pollLock() {
       try {
-        const res = await fetch('/plugins/vm-backup-and-restore/helpers/check_lock.php');
+        const res = await fetch('/plugins/vm-backup-and-restore_beta/helpers/check_lock.php');
         const data = await res.json();
         const backupLocked = data.locked && data.mode === 'manual';
         const restoreLocked = data.locked && data.mode === 'restore';
@@ -3649,7 +3649,7 @@ if (is_file($plg)) {
   function loadLastRunLog() {
     const logEl = document.getElementById('last-run-log');
 
-    fetch('/plugins/vm-backup-and-restore/helpers/fetch_last_run_log.php')
+    fetch('/plugins/vm-backup-and-restore_beta/helpers/fetch_last_run_log.php')
       .then(resp => resp.text())
       .then(text => {
         logEl.textContent = text || 'Backup & restore log not found';

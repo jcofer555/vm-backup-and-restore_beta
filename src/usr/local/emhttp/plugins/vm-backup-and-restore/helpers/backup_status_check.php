@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$status_file = '/tmp/vm-backup-and-restore/backup_status.txt';
+$status_file = '/tmp/vm-backup-and-restore_beta/backup_status.txt';
 
 $status = 'No Backup Running';
 

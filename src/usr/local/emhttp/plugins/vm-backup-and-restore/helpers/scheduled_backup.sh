@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-LOG_DIR="/tmp/vm-backup-and-restore"
+LOG_DIR="/tmp/vm-backup-and-restore_beta"
 LOCK_FILE="$LOG_DIR/lock.txt"
 STOP_FLAG="$LOG_DIR/stop_requested.txt"
 STATUS_FILE="$LOG_DIR/backup_status.txt"
@@ -128,11 +128,11 @@ run_rsync() {
     debug_log "run_rsync: rsync ${*}"
     rsync "$@" &
     RSYNC_PID=$!
-    echo "$RSYNC_PID" > "/tmp/vm-backup-and-restore/rsync.pid"
+    echo "$RSYNC_PID" > "/tmp/vm-backup-and-restore_beta/rsync.pid"
     wait $RSYNC_PID
     local exit_code=$?
     RSYNC_PID=""
-    rm -f "/tmp/vm-backup-and-restore/rsync.pid"
+    rm -f "/tmp/vm-backup-and-restore_beta/rsync.pid"
     debug_log "rsync finished with exit_code=$exit_code"
     return $exit_code
 }
@@ -145,7 +145,7 @@ set_status() {
 # Cleanup trap
 # ------------------------------------------------------------------------------
 cleanup() {
-    LOCK_FILE="/tmp/vm-backup-and-restore/lock.txt"
+    LOCK_FILE="/tmp/vm-backup-and-restore_beta/lock.txt"
     rm -f "$LOCK_FILE"
     debug_log "Lock file removed"
 
@@ -261,7 +261,7 @@ if [[ -n "${SCHEDULE_ID:-}" ]]; then
     NOTIFICATIONS="${NOTIFICATIONS:-no}"
 fi
 
-LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore.log"
+LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore_beta.log"
 
 # Rotate main log if >= 10MB
 if [[ -f "$LAST_RUN_FILE" ]]; then
@@ -269,12 +269,12 @@ if [[ -f "$LAST_RUN_FILE" ]]; then
     max_bytes=$((10 * 1024 * 1024))
     if (( size_bytes >= max_bytes )); then
         ts="$(date +%Y%m%d_%H%M%S)"
-        mv "$LAST_RUN_FILE" "$ROTATE_DIR/vm-backup-and-restore_$ts.log"
-        debug_log "Rotated main log to $ROTATE_DIR/vm-backup-and-restore_$ts.log (was >= 10MB)"
+        mv "$LAST_RUN_FILE" "$ROTATE_DIR/vm-backup-and-restore_beta_$ts.log"
+        debug_log "Rotated main log to $ROTATE_DIR/vm-backup-and-restore_beta_$ts.log (was >= 10MB)"
     fi
 fi
 
-mapfile -t rotated_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_*.log 2>/dev/null)
+mapfile -t rotated_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_beta_*.log 2>/dev/null)
 if (( ${#rotated_logs[@]} > 10 )); then
     for (( i=10; i<${#rotated_logs[@]}; i++ )); do
         rm -f "${rotated_logs[$i]}"

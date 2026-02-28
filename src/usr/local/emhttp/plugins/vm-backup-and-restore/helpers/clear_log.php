@@ -21,7 +21,7 @@ if ($csrfHeader !== $cookieToken && $postToken !== $cookieToken) {
 
 $log = $_POST['log'] ?? '';
 $files = [
-    'last'  => '/tmp/vm-backup-and-restore/vm-backup-and-restore.log'
+    'last'  => '/tmp/vm-backup-and-restore_beta/vm-backup-and-restore_beta.log'
 ];
 
 if (!isset($files[$log])) {

@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 $cfgs = [
-    '/boot/config/plugins/vm-backup-and-restore/schedules.cfg',
+    '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg',
 ];
 
 $crons = [];

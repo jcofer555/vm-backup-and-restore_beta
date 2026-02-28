@@ -1,9 +1,9 @@
 {
-    "name": "vm-backup-and-restore",
-    "package_name": "unraid-vm-backup-and-restore",
+    "name": "vm-backup-and-restore_beta",
+    "package_name": "unraid-vm-backup-and-restore_beta",
     "author": "jcofer555",
     "icon": "icon.png",
     "support": "https://forums.unraid.net/topic/197218-vm-backup-restore-for-unraid/",
     "min": "7.1.0",
-    "launch": "Settings/vm-backup-and-restore"
+    "launch": "Settings/vm-backup-and-restore_beta"
 }

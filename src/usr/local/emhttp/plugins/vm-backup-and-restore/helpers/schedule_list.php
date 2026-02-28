@@ -1,5 +1,5 @@
 <?php
-$cfg = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
+$cfg = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
 
 $schedules = [];
 if (file_exists($cfg)) {
@@ -128,14 +128,14 @@ function humanCron($cron) {
 
             <!-- Scheduling -->
             <td style="padding:8px; text-align:center;">
-                <span class="vm-backup-and-restoretip" title="<?php echo htmlspecialchars(humanCron($cron)); ?> - <?php echo htmlspecialchars($cron); ?>">
+                <span class="vm-backup-and-restore_betatip" title="<?php echo htmlspecialchars(humanCron($cron)); ?> - <?php echo htmlspecialchars($cron); ?>">
                     <?php echo htmlspecialchars(humanCron($cron)); ?>
                 </span>
             </td>
 
             <!-- VM(s) -->
             <td style="padding:8px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
-                class="vm-backup-and-restoretip"
+                class="vm-backup-and-restore_betatip"
                 title="<?php echo htmlspecialchars($vms); ?>">
                 <?php echo htmlspecialchars($vms); ?>
             </td>
@@ -147,7 +147,7 @@ function humanCron($cron) {
                 white-space:nowrap;
                 overflow:hidden;
                 text-overflow:ellipsis;"
-                class="vm-backup-and-restoretip"
+                class="vm-backup-and-restore_betatip"
                 title="<?php echo htmlspecialchars($dest); ?>">
                 <?php echo htmlspecialchars($dest); ?>
             </td>
@@ -176,28 +176,28 @@ function humanCron($cron) {
             <td style="padding:8px; text-align:center;">
 
                 <button type="button"
-                        class="vm-backup-and-restoretip"
+                        class="vm-backup-and-restore_betatip"
                         title="Edit schedule"
                         onclick="editSchedule('<?php echo $id; ?>')">
                     Edit
                 </button>
 
                 <button type="button"
-                        class="vm-backup-and-restoretip"
+                        class="vm-backup-and-restore_betatip"
                         title="<?php echo $enabledBool ? 'Disable schedule' : 'Enable schedule'; ?>"
                         onclick="toggleSchedule('<?php echo $id; ?>', <?php echo $enabledBool ? 'true' : 'false'; ?>)">
                     <?php echo $btnText; ?>
                 </button>
 
                 <button type="button"
-                        class="vm-backup-and-restoretip"
+                        class="vm-backup-and-restore_betatip"
                         title="Delete schedule"
                         onclick="deleteSchedule('<?php echo $id; ?>')">
                     Delete
                 </button>
 
                 <button type="button"
-                        class="schedule-action-btn running-btn run-schedule-btn vm-backup-and-restoretip"
+                        class="schedule-action-btn running-btn run-schedule-btn vm-backup-and-restore_betatip"
                         title="Run schedule"
                         onclick="runScheduleBackup('<?php echo $id; ?>', this)">
                     Run

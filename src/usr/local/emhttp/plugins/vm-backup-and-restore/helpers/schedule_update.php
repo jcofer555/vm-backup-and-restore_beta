@@ -1,7 +1,7 @@
 <?php
 require_once 'rebuild_cron.php';
 
-$cfg = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
+$cfg = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
 
 $id       = $_POST['id'] ?? '';
 $cron     = trim($_POST['cron'] ?? '');

@@ -1,5 +1,5 @@
 <?php
-$lock = '/tmp/vm-backup-and-restore/lock.txt';
+$lock = '/tmp/vm-backup-and-restore_beta/lock.txt';
 
 header('Content-Type: application/json');
 

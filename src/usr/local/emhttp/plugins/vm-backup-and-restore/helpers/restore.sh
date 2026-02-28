@@ -2,7 +2,7 @@
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 SCRIPT_START_EPOCH=$(date +%s)
-STOP_FLAG="/tmp/vm-backup-and-restore/restore_stop_requested.txt"
+STOP_FLAG="/tmp/vm-backup-and-restore_beta/restore_stop_requested.txt"
 RSYNC_PID=""
 RESTORED_FILES=()
 TEMP_FILES=()
@@ -22,7 +22,7 @@ format_duration() {
 }
 
 # --- RESTORE STATUS FILE ---
-RESTORE_STATUS_FILE="/tmp/vm-backup-and-restore/restore_status.txt"
+RESTORE_STATUS_FILE="/tmp/vm-backup-and-restore_beta/restore_status.txt"
 set_restore_status() {
     echo "$1" > "$RESTORE_STATUS_FILE"
 }
@@ -30,8 +30,8 @@ set_restore_status "Started restore session"
 # ---------------------------
 
 # Logging
-LOG_DIR="/tmp/vm-backup-and-restore"
-LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore.log"
+LOG_DIR="/tmp/vm-backup-and-restore_beta"
+LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore_beta.log"
 ROTATE_DIR="$LOG_DIR/archived_logs"
 DEBUG_LOG="$LOG_DIR/vm-restore-debug.log"
 mkdir -p "$ROTATE_DIR"
@@ -47,13 +47,13 @@ if [[ -f "$LAST_RUN_FILE" ]]; then
 
     if (( size_bytes >= max_bytes )); then
         ts="$(date +%Y%m%d_%H%M%S)"
-        rotated="$ROTATE_DIR/vm-backup-and-restore_$ts.log"
+        rotated="$ROTATE_DIR/vm-backup-and-restore_beta_$ts.log"
         mv "$LAST_RUN_FILE" "$rotated"
         debug_log "Rotated main log to $rotated (was >= 10MB)"
     fi
 fi
 
-mapfile -t rotated_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_*.log 2>/dev/null)
+mapfile -t rotated_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_beta_*.log 2>/dev/null)
 
 if (( ${#rotated_logs[@]} > 10 )); then
     for (( i=10; i<${#rotated_logs[@]}; i++ )); do
@@ -93,7 +93,7 @@ echo "Restore session started - $(date '+%Y-%m-%d %H:%M:%S')"
 # ------------------------------------------------------------------------------
 
 cleanup() {
-    LOCK_FILE="/tmp/vm-backup-and-restore/lock.txt"
+    LOCK_FILE="/tmp/vm-backup-and-restore_beta/lock.txt"
     rm -f "$LOCK_FILE"
     debug_log "Lock file removed"
 
@@ -168,7 +168,7 @@ cleanup() {
 
 trap cleanup EXIT SIGTERM SIGINT SIGHUP SIGQUIT
 
-CONFIG="/boot/config/plugins/vm-backup-and-restore/settings_restore.cfg"
+CONFIG="/boot/config/plugins/vm-backup-and-restore_beta/settings_restore.cfg"
 debug_log "Loading config: $CONFIG"
 source "$CONFIG" || { debug_log "ERROR: Failed to source config: $CONFIG"; exit 1; }
 
@@ -363,11 +363,11 @@ run_rsync() {
     debug_log "run_rsync: rsync ${*}"
     rsync "$@" &
     RSYNC_PID=$!
-    echo "$RSYNC_PID" > "/tmp/vm-backup-and-restore/restore_rsync.pid"
+    echo "$RSYNC_PID" > "/tmp/vm-backup-and-restore_beta/restore_rsync.pid"
     wait $RSYNC_PID
     local exit_code=$?
     RSYNC_PID=""
-    rm -f "/tmp/vm-backup-and-restore/restore_rsync.pid"
+    rm -f "/tmp/vm-backup-and-restore_beta/restore_rsync.pid"
     debug_log "rsync finished with exit_code=$exit_code"
     return $exit_code
 }

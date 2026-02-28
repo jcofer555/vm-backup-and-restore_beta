@@ -41,8 +41,8 @@ USER_CFG="/boot/config/plugins/{{ name }}/settings.cfg"
 RESTORE_USER_CFG="/boot/config/plugins/{{ name }}/settings_restore.cfg"
 DEFAULT_CFG="/usr/local/emhttp/plugins/{{ name }}/helpers/default_settings.cfg"
 RESTORE_DEFAULT_CFG="/usr/local/emhttp/plugins/{{ name }}/helpers/default_settings_restore.cfg"
-TMP_CFG="/tmp/vm-backup-and-restore_settings.tmp"
-RESTORE_TMP_CFG="/tmp/vm-backup-and-restore_settings_restore.tmp"
+TMP_CFG="/tmp/vm-backup-and-restore_beta_settings.tmp"
+RESTORE_TMP_CFG="/tmp/vm-backup-and-restore_beta_settings_restore.tmp"
 
 # Install the package
 upgradepkg --install-new "$PACKAGE_TXZ"
@@ -142,7 +142,7 @@ echo ""
 <INLINE>
 <![CDATA[
 removepkg {{ package_name }}
-rm -rf /usr/local/emhttp/plugins/vm-backup-and-restore
+rm -rf /usr/local/emhttp/plugins/vm-backup-and-restore_beta
 rm -rf /boot/config/plugins/{{ name }}
 ]]>
 </INLINE>

@@ -2,7 +2,7 @@
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 SCRIPT_START_EPOCH=$(date +%s)
-STOP_FLAG="/tmp/vm-backup-and-restore/stop_requested.txt"
+STOP_FLAG="/tmp/vm-backup-and-restore_beta/stop_requested.txt"
 RSYNC_PID=""
 
 format_duration() {
@@ -114,23 +114,23 @@ run_rsync() {
     debug_log "run_rsync: rsync ${*}"
     rsync "$@" &
     RSYNC_PID=$!
-    echo "$RSYNC_PID" > "/tmp/vm-backup-and-restore/rsync.pid"
+    echo "$RSYNC_PID" > "/tmp/vm-backup-and-restore_beta/rsync.pid"
     wait $RSYNC_PID
     local exit_code=$?
     RSYNC_PID=""
-    rm -f "/tmp/vm-backup-and-restore/rsync.pid"
+    rm -f "/tmp/vm-backup-and-restore_beta/rsync.pid"
     debug_log "rsync finished with exit_code=$exit_code"
     return $exit_code
 }
 
-LOG_DIR="/tmp/vm-backup-and-restore"
-LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore.log"
+LOG_DIR="/tmp/vm-backup-and-restore_beta"
+LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore_beta.log"
 ROTATE_DIR="$LOG_DIR/archived_logs"
 DEBUG_LOG="$LOG_DIR/vm-backup-debug.log"
 mkdir -p "$ROTATE_DIR"
 
 # Overwrite PID with real script PID
-sed -i "s/PID=.*/PID=$$/" "/tmp/vm-backup-and-restore/lock.txt"
+sed -i "s/PID=.*/PID=$$/" "/tmp/vm-backup-and-restore_beta/lock.txt"
 
 # --- STATUS FILE ---
 STATUS_FILE="$LOG_DIR/backup_status.txt"
@@ -151,13 +151,13 @@ if [[ -f "$LAST_RUN_FILE" ]]; then
 
     if (( size_bytes >= max_bytes )); then
         ts="$(date +%Y%m%d_%H%M%S)"
-        rotated="$ROTATE_DIR/vm-backup-and-restore_$ts.log"
+        rotated="$ROTATE_DIR/vm-backup-and-restore_beta_$ts.log"
         mv "$LAST_RUN_FILE" "$rotated"
         debug_log "Rotated main log to $rotated (was >= 10MB)"
     fi
 fi
 
-mapfile -t rotated_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_*.log 2>/dev/null)
+mapfile -t rotated_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_beta_*.log 2>/dev/null)
 
 if (( ${#rotated_logs[@]} > 10 )); then
     for (( i=10; i<${#rotated_logs[@]}; i++ )); do
@@ -173,12 +173,12 @@ if [[ -f "$DEBUG_LOG" ]]; then
 
     if (( size_bytes >= max_bytes )); then
         ts="$(date +%Y%m%d_%H%M%S)"
-        mv "$DEBUG_LOG" "$ROTATE_DIR/vm-backup-and-restore-debug_$ts.log"
-        debug_log "Rotated debug log to $ROTATE_DIR/vm-backup-and-restore-debug_$ts.log (was >= 10MB)"
+        mv "$DEBUG_LOG" "$ROTATE_DIR/vm-backup-and-restore_beta-debug_$ts.log"
+        debug_log "Rotated debug log to $ROTATE_DIR/vm-backup-and-restore_beta-debug_$ts.log (was >= 10MB)"
     fi
 fi
 
-mapfile -t rotated_debug_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore-debug_*.log 2>/dev/null)
+mapfile -t rotated_debug_logs < <(ls -1t "$ROTATE_DIR"/vm-backup-and-restore_beta-debug_*.log 2>/dev/null)
 
 if (( ${#rotated_debug_logs[@]} > 10 )); then
     for (( i=10; i<${#rotated_debug_logs[@]}; i++ )); do
@@ -192,7 +192,7 @@ exec > >(tee -a "$LAST_RUN_FILE") 2>&1
 echo "--------------------------------------------------------------------------------------------------"
 echo "Backup session started - $(date '+%Y-%m-%d %H:%M:%S')"
 
-CONFIG="/boot/config/plugins/vm-backup-and-restore/settings.cfg"
+CONFIG="/boot/config/plugins/vm-backup-and-restore_beta/settings.cfg"
 debug_log "Loading config: $CONFIG"
 source "$CONFIG" || { debug_log "ERROR: Failed to source config: $CONFIG"; exit 1; }
 
@@ -348,7 +348,7 @@ declare -a vms_stopped_by_script=()
 # ------------------------------------------------------------------------------
 
 cleanup() {
-    LOCK_FILE="/tmp/vm-backup-and-restore/lock.txt"
+    LOCK_FILE="/tmp/vm-backup-and-restore_beta/lock.txt"
     rm -f "$LOCK_FILE"
     debug_log "Lock file removed"
 

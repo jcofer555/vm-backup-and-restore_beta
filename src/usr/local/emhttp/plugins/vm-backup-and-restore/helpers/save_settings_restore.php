@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 // Path to your shell script
-$cmd = '/usr/local/emhttp/plugins/vm-backup-and-restore/helpers/save_settings_restore.sh';
+$cmd = '/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/save_settings_restore.sh';
 
 // --- Grab raw values ---
 $location_of_backups            = $_GET['LOCATION_OF_BACKUPS'] ?? '';

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$cmd = '/usr/local/emhttp/plugins/vm-backup-and-restore/helpers/save_settings.sh';
+$cmd = '/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/save_settings.sh';
 
 // --- Grab raw values ---
 $vms_to_backup          = $_GET['VMS_TO_BACKUP'] ?? '';

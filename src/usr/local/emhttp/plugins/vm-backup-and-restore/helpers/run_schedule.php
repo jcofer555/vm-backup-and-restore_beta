@@ -8,7 +8,7 @@ if (!$id) {
     exit;
 }
 
-$cfg = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
+$cfg = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
 $schedules = parse_ini_file($cfg, true, INI_SCANNER_RAW);
 
 if (!isset($schedules[$id])) {
@@ -16,9 +16,9 @@ if (!isset($schedules[$id])) {
     exit;
 }
 
-$lockDir = '/tmp/vm-backup-and-restore';
+$lockDir = '/tmp/vm-backup-and-restore_beta';
 $lock = "$lockDir/lock.txt";
-$script = '/usr/local/emhttp/plugins/vm-backup-and-restore/helpers/scheduled_backup.sh';
+$script = '/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/scheduled_backup.sh';
 
 if (!is_dir($lockDir)) {
     mkdir($lockDir, 0777, true);

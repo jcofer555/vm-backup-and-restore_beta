@@ -1,5 +1,5 @@
 <?php
-$cfg = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
+$cfg = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
 $id = $_GET['id'] ?? null;
 
 if (!$id) {

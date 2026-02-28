@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-$lockDir = '/tmp/vm-backup-and-restore';
+$lockDir = '/tmp/vm-backup-and-restore_beta';
 $lock = "$lockDir/lock.txt";
-$script = '/usr/local/emhttp/plugins/vm-backup-and-restore/helpers/restore.sh';
+$script = '/usr/local/emhttp/plugins/vm-backup-and-restore_beta/helpers/restore.sh';
 
 if (!is_dir($lockDir)) {
     mkdir($lockDir, 0777, true);
