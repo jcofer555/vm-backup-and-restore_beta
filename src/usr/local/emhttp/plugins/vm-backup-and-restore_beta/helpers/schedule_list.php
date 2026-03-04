@@ -197,7 +197,7 @@ function humanCron($cron) {
                 </button>
 
                 <button type="button"
-                        class="schedule-action-btn running-btn run-schedule-btn vm-backup-and-restore_betatip"
+                        class="schedule-action-btn running-btn run-schedule-btn data-schedule-id vm-backup-and-restore_betatip"
                         title="Run schedule"
                         onclick="runScheduleBackup('<?php echo $id; ?>', this)">
                     Run
