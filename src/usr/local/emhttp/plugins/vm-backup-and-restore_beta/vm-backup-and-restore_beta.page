@@ -7,8 +7,8 @@ Markdown="false"
 ---
 <?php
 // ── Constants ──────────────────────────────────────────────────────────────
-const CFG_PATH         = '/boot/config/plugins/vm-backup-and-restore/settings.cfg';
-const CFG_RESTORE_PATH = '/boot/config/plugins/vm-backup-and-restore/settings_restore.cfg';
+const CFG_PATH         = '/boot/config/plugins/vm-backup-and-restore_beta/settings.cfg';
+const CFG_RESTORE_PATH = '/boot/config/plugins/vm-backup-and-restore_beta/settings_restore.cfg';
 
 // ── Backup config defaults ─────────────────────────────────────────────────
 $backup_defaults_arr = [
@@ -137,7 +137,7 @@ $selected_services_restore_arr = array_filter(explode(',', $restore_settings_arr
 
 <script>
 'use strict';
-const HELPERS_BASE_STR  = '/plugins/vm-backup-and-restore/helpers';
+const HELPERS_BASE_STR  = '/plugins/vm-backup-and-restore_beta/helpers';
 const POLL_FAST_MS_INT  = 1000;
 const POLL_SLOW_MS_INT  = 4000;
 
@@ -2702,7 +2702,7 @@ $(document).ready(function() {
   vmbrLoadRestoreFolders();
 
   if (typeof caPluginUpdateCheck === 'function') {
-    caPluginUpdateCheck('vm-backup-and-restore.plg', { name:'vm-backup-and-restore' });
+    caPluginUpdateCheck('vm-backup-and-restore_beta.plg', { name:'vm-backup-and-restore_beta' });
   }
 });
 </script>
