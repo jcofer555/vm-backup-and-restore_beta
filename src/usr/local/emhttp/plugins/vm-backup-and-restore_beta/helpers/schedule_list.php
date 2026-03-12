@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const SCHEDULES_CFG = '/boot/config/plugins/vm-backup-and-restore/schedules.cfg';
+const SCHEDULES_CFG = '/boot/config/plugins/vm-backup-and-restore_beta/schedules.cfg';
 
 $schedules_arr = [];
 if (file_exists(SCHEDULES_CFG)) {
