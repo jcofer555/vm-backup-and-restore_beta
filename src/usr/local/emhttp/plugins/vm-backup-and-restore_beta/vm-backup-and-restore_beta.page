@@ -1,6 +1,6 @@
 Menu="Utilities"
 Type="xmenu"
-Title="VM Backup & Restore"
+Title="VM Backup & Restore Beta"
 Icon="icon.png"
 Tag="icon.png"
 Markdown="false"
@@ -96,11 +96,11 @@ $sibling_plugin_checks_arr = [
         'label' => 'Flash Backup (Beta)',
         'url'   => '/Settings/flash-backup_beta',
     ],
-    'vm-backup-and-restore_beta' => [
-        'plg'   => '/boot/config/plugins/vm-backup-and-restore_beta.plg',
-        'page'  => '/usr/local/emhttp/plugins/vm-backup-and-restore_beta/vm-backup-and-restore_beta.page',
-        'label' => 'VM Backup & Restore (Beta)',
-        'url'   => '/Settings/vm-backup-and-restore_beta',
+    'vm-backup-and-restore' => [
+        'plg'   => '/boot/config/plugins/vm-backup-and-restore.plg',
+        'page'  => '/usr/local/emhttp/plugins/vm-backup-and-restore/vm-backup-and-restore.page',
+        'label' => 'VM Backup & Restore',
+        'url'   => '/Settings/vm-backup-and-restore',
     ],
 ];
 $sibling_plugins_arr = [];
