@@ -84,6 +84,12 @@ $sibling_plugin_checks_arr = [
         'label' => 'Flash Backup',
         'url'   => '/Settings/flash-backup',
     ],
+      'vm-backup-and-restore' => [
+        'plg'   => '/boot/config/plugins/vm-backup-and-restore.plg',
+        'page'  => '/usr/local/emhttp/plugins/vm-backup-and-restore/vm-backup-and-restore.page',
+        'label' => 'VM Backup & Restore',
+        'url'   => '/Settings/vm-backup-and-restore',
+    ],
     'automover_beta' => [
         'plg'   => '/boot/config/plugins/automover_beta.plg',
         'page'  => '/usr/local/emhttp/plugins/automover_beta/automover_beta.page',
@@ -96,12 +102,7 @@ $sibling_plugin_checks_arr = [
         'label' => 'Flash Backup (Beta)',
         'url'   => '/Settings/flash-backup_beta',
     ],
-    'vm-backup-and-restore' => [
-        'plg'   => '/boot/config/plugins/vm-backup-and-restore.plg',
-        'page'  => '/usr/local/emhttp/plugins/vm-backup-and-restore/vm-backup-and-restore.page',
-        'label' => 'VM Backup & Restore',
-        'url'   => '/Settings/vm-backup-and-restore',
-    ],
+
 ];
 $sibling_plugins_arr = [];
 $current_plugin_str  = basename(dirname(__FILE__)); // e.g. vm-backup-and-restore
