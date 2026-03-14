@@ -1,17 +1,12 @@
 <?php
-declare(strict_types=1);
-header('Content-Type: text/plain');
+$debug   = !empty($_GET['debug']) && $_GET['debug'] === '1';
+$logFile = $debug
+    ? '/tmp/vm-backup-and-restore_beta/vm-backup-and-restore_beta-debug.log'
+    : '/tmp/vm-backup-and-restore_beta/vm-backup-and-restore_beta.log';
 
-const LOG_PATH = '/tmp/vm-backup-and-restore_beta/vm-backup-and-restore_beta.log';
-const MAX_LINES = 500;
-
-if (!file_exists(LOG_PATH)) {
-    echo 'Backup & restore log not found';
-    exit;
+header('Content-Type: text/plain; charset=utf-8');
+if (file_exists($logFile)) {
+    readfile($logFile);
+} else {
+    echo '';
 }
-
-$lines_arr   = file(LOG_PATH, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-$tail_arr    = array_slice($lines_arr, -MAX_LINES);
-$reversed_arr = array_reverse($tail_arr);
-
-echo implode("\n", $reversed_arr);

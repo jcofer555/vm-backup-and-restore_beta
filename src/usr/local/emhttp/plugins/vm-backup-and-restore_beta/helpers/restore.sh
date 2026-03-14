@@ -26,7 +26,7 @@ set_restore_status "Started restore session"
 LOG_DIR="/tmp/vm-backup-and-restore_beta"
 LAST_RUN_FILE="$LOG_DIR/vm-backup-and-restore_beta.log"
 ROTATE_DIR="$LOG_DIR/archived_logs"
-DEBUG_LOG="$LOG_DIR/vm-restore-debug.log"
+DEBUG_LOG="$LOG_DIR/vm-backup-and-restore_beta-debug.log"
 mkdir -p "$ROTATE_DIR"
 
 debug_log() {
