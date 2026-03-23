@@ -156,73 +156,6 @@ CONFIG="/boot/config/plugins/vm-backup-and-restore_beta/settings_restore.cfg"
 debug_log "Loading config: $CONFIG"
 source "$CONFIG" || { debug_log "ERROR: Failed to source config: $CONFIG"; exit 1; }
 
-# physical_mount_path <path>
-# Returns the mount point that owns <path> using df, walking up the path if needed.
-physical_mount_path() {
-    local path_str="$1"
-    local check_str="$path_str"
-    while [[ -n "$check_str" && "$check_str" != "/" ]]; do
-        if [[ -e "$check_str" ]]; then
-            local mount_str
-            mount_str=$(df --output=target "$check_str" 2>/dev/null | tail -n1)
-            [[ -n "$mount_str" ]] && { echo "$mount_str"; return; }
-        fi
-        check_str="$(dirname "$check_str")"
-    done
-    echo "$(readlink -f "$path_str" 2>/dev/null || echo "$path_str")"
-}
-
-classify_path() {
-    local path_str="$1"
-
-    # Check the original path string first.
-    # /mnt/user and /mnt/user0 are shfs virtual mounts — any path under them
-    # is a user/user0 share path regardless of where shfs physically stores it.
-    # Using df on these paths would return the underlying physical mount
-    # (/mnt/cache, /mnt/diskN) rather than /mnt/user, causing false mismatches
-    # when both src and dst are under /mnt/user but on different physical shares.
-    if [[ "$path_str" == /mnt/user  || "$path_str" == /mnt/user/*  ]];    then echo "USER";   return; fi
-    if [[ "$path_str" == /mnt/user0 || "$path_str" == /mnt/user0/* ]];    then echo "USER0";  return; fi
-    if [[ "$path_str" == /mnt/remotes || "$path_str" == /mnt/remotes/* ]]; then echo "EXEMPT"; return; fi
-    if [[ "$path_str" == /mnt/addons  || "$path_str" == /mnt/addons/*  ]]; then echo "EXEMPT"; return; fi
-
-    # For other /mnt/* paths (e.g. /mnt/backup/..., /mnt/cache/..., /mnt/disk1/...)
-    # use df to find the real mount point, which correctly classifies symlinks
-    # like /mnt/backup -> /mnt/disk1/backup as DISK rather than following the
-    # symlink string and misclassifying.
-    local mount_str
-    mount_str=$(physical_mount_path "$path_str")
-    if [[ "$mount_str" == /mnt/user  || "$mount_str" == /mnt/user/*  ]];    then echo "USER";   return; fi
-    if [[ "$mount_str" == /mnt/user0 || "$mount_str" == /mnt/user0/* ]];    then echo "USER0";  return; fi
-    if [[ "$mount_str" == /mnt/remotes || "$mount_str" == /mnt/remotes/* ]]; then echo "EXEMPT"; return; fi
-    if [[ "$mount_str" == /mnt/addons  || "$mount_str" == /mnt/addons/*  ]]; then echo "EXEMPT"; return; fi
-    if [[ "$mount_str" == /mnt/* ]]; then echo "DISK"; return; fi
-    echo "OTHER"
-}
-
-validate_mount_compatibility() {
-    local src_str="$1" dst_str="$2"
-    local src_resolved_str dst_resolved_str src_class_str dst_class_str
-    src_resolved_str=$(readlink -f "$src_str" 2>/dev/null || echo "$src_str")
-    dst_resolved_str=$(readlink -f "$dst_str" 2>/dev/null || echo "$dst_str")
-    src_class_str=$(classify_path "$src_resolved_str")
-    dst_class_str=$(classify_path "$dst_resolved_str")
-    debug_log "validate_mount_compatibility: src=$src_str -> $src_resolved_str ($src_class_str) dst=$dst_str -> $dst_resolved_str ($dst_class_str)"
-    local allowed_int=0
-    case "$src_class_str" in
-        USER)   [[ "$dst_class_str" == "USER"  || "$dst_class_str" == "EXEMPT" ]] && allowed_int=1 ;;
-        USER0)  [[ "$dst_class_str" == "USER0" || "$dst_class_str" == "DISK"  || "$dst_class_str" == "EXEMPT" ]] && allowed_int=1 ;;
-        DISK)   [[ "$dst_class_str" == "DISK"  || "$dst_class_str" == "USER0" || "$dst_class_str" == "EXEMPT" ]] && allowed_int=1 ;;
-        EXEMPT) allowed_int=1 ;;
-    esac
-    if [[ "$allowed_int" -eq 0 ]]; then
-        echo "[ERROR] Backup source ($src_str, class: $src_class_str) is incompatible with restore destination ($dst_str, class: $dst_class_str)"
-        debug_log "ERROR: Mount type mismatch src=$src_str ($src_class_str) dst=$dst_str ($dst_class_str)"
-        return 1
-    fi
-    return 0
-}
-
 # Webhook cleanup
 WEBHOOK_DISCORD_RESTORE="${WEBHOOK_DISCORD_RESTORE//\"/}"
 WEBHOOK_GOTIFY_RESTORE="${WEBHOOK_GOTIFY_RESTORE//\"/}"
@@ -279,12 +212,6 @@ debug_log "===== Session started ====="
 debug_log "VMS_TO_RESTORE=$VMS_TO_RESTORE DRY_RUN=$DRY_RUN"
 debug_log "backup_path=$backup_path_str vm_domains=$vm_domains_str"
 
-if [[ -n "$backup_path_str" && -n "$vm_domains_str" ]]; then
-    if ! validate_mount_compatibility "$backup_path_str" "$vm_domains_str"; then
-        set_restore_status "Aborted — mount type mismatch between backup source and restore destination"
-        exit 1
-    fi
-fi
 
 mapfile -t RUNNING_BEFORE_arr < <(virsh list --state-running --name | grep -Fxv "")
 debug_log "VMs running before restore: ${RUNNING_BEFORE_arr[*]:-none}"
@@ -321,16 +248,14 @@ run_rsync_meta() {
 }
 
 # restore_vdisk <src> <dest>
-# Format-aware restore matching the same strategy as copy_vdisk in backup.sh:
 #
-#   qcow2, same-fs  → cp --reflink=always (instant CoW)
-#   qcow2, diff-fs  → qemu-img convert   (allocated clusters only)
-#   raw,   same-fs  → cp --reflink=always (instant CoW)
-#   raw,   diff-fs  → rsync --sparse      (safe: dest is always rm'd first so it's a fresh file)
+# Strategy mirrors copy_vdisk:
+#   same-fs  → cp --reflink=always (instant CoW)
+#   diff-fs  → cp --sparse=always
+#   fallback → rsync --sparse
 #
-# --sparse is safe here because restore.sh always removes the destination before
-# writing (rm -f "$dest"), so there is no pre-existing data that sparse holes
-# could expose.
+# Caller always rm -f the dest before calling so delta sync is not used here —
+# restore always writes a clean copy.
 restore_vdisk() {
     local src_str="$1"
     local dest_str="$2"
@@ -343,58 +268,29 @@ restore_vdisk() {
 
     debug_log "restore_vdisk: $src_str -> $dest_str"
 
-    # Detect format from source file header
-    local fmt_str="raw"
-    if command -v qemu-img >/dev/null 2>&1; then
-        fmt_str=$(qemu-img info --output=json "$src_str" 2>/dev/null                   | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('format','raw'))" 2>/dev/null)
-        [[ -z "$fmt_str" ]] && fmt_str="raw"
-    fi
-    debug_log "restore_vdisk: format=$fmt_str"
-
     # Try reflink first — instant on same-filesystem Btrfs/XFS
     if cp --reflink=always "$src_str" "$dest_str" 2>/dev/null; then
         debug_log "restore_vdisk: reflink OK (instant CoW)"
         return 0
     fi
 
-    # Cross-filesystem or no reflink support
-    if [[ "$fmt_str" == "qcow2" ]]; then
-        debug_log "restore_vdisk: qemu-img convert (qcow2, allocated clusters only)"
-        qemu-img convert -f qcow2 -O qcow2 -W -p "$src_str" "$dest_str" 2>/dev/null &
-        local qimg_pid_int=$!
-        wait $qimg_pid_int
-        local exit_code_int=$?
-        if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
-            debug_log "restore_vdisk: qemu-img interrupted (exit=$exit_code_int)"; exit 1
-        fi
-        if [[ $exit_code_int -eq 0 ]]; then
-            debug_log "restore_vdisk: qemu-img convert OK"
-            return 0
-        fi
-        debug_log "restore_vdisk: qemu-img failed (exit=$exit_code_int), falling back to rsync"
-        rm -f "$dest_str"
+    # Cross-filesystem or no reflink support — cp --sparse=always
+    debug_log "restore_vdisk: cp --sparse=always"
+    cp --sparse=always "$src_str" "$dest_str" &
+    local cp_pid_int=$!
+    wait $cp_pid_int
+    local exit_code_int=$?
+    if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
+        debug_log "restore_vdisk: cp interrupted (exit=$exit_code_int)"; exit 1
+    fi
+    if [[ $exit_code_int -eq 0 ]]; then
+        debug_log "restore_vdisk: cp --sparse=always OK"
+        return 0
     fi
 
-    # raw disk: qemu-img convert skips unallocated extents via block layer.
-    # Better than rsync --sparse which only skips zero byte runs.
-    if command -v qemu-img >/dev/null 2>&1 && [[ "$fmt_str" == "raw" ]]; then
-        debug_log "restore_vdisk: qemu-img convert (raw, unallocated extents skipped)"
-        qemu-img convert -f raw -O raw -W -p "$src_str" "$dest_str" 2>/dev/null &
-        local qimg_pid_int=$!
-        wait $qimg_pid_int
-        local exit_code_int=$?
-        if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
-            debug_log "restore_vdisk: qemu-img interrupted (exit=$exit_code_int)"; exit 1
-        fi
-        if [[ $exit_code_int -eq 0 ]]; then
-            debug_log "restore_vdisk: qemu-img convert raw OK"
-            return 0
-        fi
-        debug_log "restore_vdisk: qemu-img raw failed (exit=$exit_code_int), falling back to rsync"
-        rm -f "$dest_str"
-    fi
-
-    # Final fallback: rsync --sparse. Safe because dest is always rm'd before this call.
+    # Fallback: rsync --sparse. Dest is always rm'd before this call so safe.
+    debug_log "restore_vdisk: cp failed (exit=$exit_code_int), falling back to rsync --sparse"
+    rm -f "$dest_str"
     rsync -aHAX --sparse --no-perms --no-owner --no-group "$src_str" "$dest_str" &
     RSYNC_PID=$!
     wait $RSYNC_PID

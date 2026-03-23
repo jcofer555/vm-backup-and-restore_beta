@@ -36,86 +36,6 @@ format_duration() {
     echo "$out_str"
 }
 
-# physical_mount_path <path>
-# Returns the actual mount point path that owns <path>, resolved past any symlinks
-# in the path components themselves (but not through shfs virtual filesystem).
-# Uses df to find the real mount point rather than readlink -f which can land
-# on /mnt/user even for paths that physically live on /mnt/cache or /mnt/diskN.
-physical_mount_path() {
-    local path_str="$1"
-    local mount_str
-    # df --output=target gives the mount point that owns the path.
-    # If the path doesn't exist yet (destination not created), walk up until we find a parent that does.
-    local check_str="$path_str"
-    while [[ -n "$check_str" && "$check_str" != "/" ]]; do
-        if [[ -e "$check_str" ]]; then
-            mount_str=$(df --output=target "$check_str" 2>/dev/null | tail -n1)
-            [[ -n "$mount_str" ]] && { echo "$mount_str"; return; }
-        fi
-        check_str="$(dirname "$check_str")"
-    done
-    # Fallback: resolve symlinks in the path prefix only
-    echo "$(readlink -f "$path_str" 2>/dev/null || echo "$path_str")"
-}
-
-classify_path() {
-    local path_str="$1"
-
-    # Check the original path string first.
-    # /mnt/user and /mnt/user0 are shfs virtual mounts — any path under them
-    # is a user/user0 share path regardless of where shfs physically stores it.
-    # Using df on these paths would return the underlying physical mount
-    # (/mnt/cache, /mnt/diskN) rather than /mnt/user, causing false mismatches
-    # when both src and dst are under /mnt/user but on different physical shares.
-    if [[ "$path_str" == /mnt/user  || "$path_str" == /mnt/user/*  ]];    then echo "USER";   return; fi
-    if [[ "$path_str" == /mnt/user0 || "$path_str" == /mnt/user0/* ]];    then echo "USER0";  return; fi
-    if [[ "$path_str" == /mnt/remotes || "$path_str" == /mnt/remotes/* ]]; then echo "EXEMPT"; return; fi
-    if [[ "$path_str" == /mnt/addons  || "$path_str" == /mnt/addons/*  ]]; then echo "EXEMPT"; return; fi
-
-    # For other /mnt/* paths (e.g. /mnt/backup/..., /mnt/cache/..., /mnt/disk1/...)
-    # use df to find the real mount point, which correctly classifies symlinks
-    # like /mnt/backup -> /mnt/disk1/backup as DISK rather than following the
-    # symlink string and misclassifying.
-    local mount_str
-    mount_str=$(physical_mount_path "$path_str")
-    if [[ "$mount_str" == /mnt/user  || "$mount_str" == /mnt/user/*  ]];    then echo "USER";   return; fi
-    if [[ "$mount_str" == /mnt/user0 || "$mount_str" == /mnt/user0/* ]];    then echo "USER0";  return; fi
-    if [[ "$mount_str" == /mnt/remotes || "$mount_str" == /mnt/remotes/* ]]; then echo "EXEMPT"; return; fi
-    if [[ "$mount_str" == /mnt/addons  || "$mount_str" == /mnt/addons/*  ]]; then echo "EXEMPT"; return; fi
-    if [[ "$mount_str" == /mnt/* ]]; then echo "DISK"; return; fi
-    echo "OTHER"
-}
-
-validate_mount_compatibility() {
-    local src_str="$1" dst_str="$2"
-    local src_class_str dst_class_str
-
-    # Resolve both to physical paths for classification only.
-    # Original paths are kept for display in error messages.
-    local src_resolved_str dst_resolved_str
-    src_resolved_str=$(readlink -f "$src_str" 2>/dev/null || echo "$src_str")
-    dst_resolved_str=$(readlink -f "$dst_str" 2>/dev/null || echo "$dst_str")
-
-    src_class_str=$(classify_path "$src_resolved_str")
-    dst_class_str=$(classify_path "$dst_resolved_str")
-    debug_log "validate_mount_compatibility: src=$src_str -> $src_resolved_str ($src_class_str) dst=$dst_str -> $dst_resolved_str ($dst_class_str)"
-    local allowed_int=0
-    case "$src_class_str" in
-        USER)   [[ "$dst_class_str" == "USER"  || "$dst_class_str" == "EXEMPT" ]] && allowed_int=1 ;;
-        USER0)  [[ "$dst_class_str" == "USER0" || "$dst_class_str" == "DISK"  || "$dst_class_str" == "EXEMPT" ]] && allowed_int=1 ;;
-        DISK)   [[ "$dst_class_str" == "DISK"  || "$dst_class_str" == "USER0" || "$dst_class_str" == "EXEMPT" ]] && allowed_int=1 ;;
-        EXEMPT) allowed_int=1 ;;
-    esac
-    if [[ "$allowed_int" -eq 0 ]]; then
-        echo "[ERROR] Vdisk $src_str ($src_class_str) is incompatible with destination $dst_str ($dst_class_str)"
-        echo "[ERROR] USER->USER/EXEMPT  USER0->USER0/DISK/EXEMPT  DISK->DISK/USER0/EXEMPT"
-        debug_log "ERROR: mount mismatch src=$src_str ($src_class_str) dst=$dst_str ($dst_class_str)"
-        set_status "Mount type mismatch for $src_str"
-        return 1
-    fi
-    return 0
-}
-
 cleanup_partial_backup() {
     local folder_str="$1" ts_str="$2"
     [[ ! -d "$folder_str" ]] && return
@@ -143,91 +63,66 @@ run_rsync() {
     return $exit_code_int
 }
 
-# copy_vdisk <src> <dest> [fmt]
-# fmt: qcow2 or raw (detected from file if not passed, defaults to qcow2)
+# copy_vdisk <src> <dest>
 #
-# Strategy by format and filesystem:
-#   qcow2, same-fs  → cp --reflink=auto (instant CoW, no data copied)
-#   qcow2, diff-fs  → qemu-img convert  (copies only allocated clusters, skips empty space)
-#   raw,   same-fs  → cp --reflink=auto (instant CoW)
-#   raw,   diff-fs  → qemu-img convert  (skips unallocated extents) → rsync --sparse fallback
+# Strategy:
+#   same-fs  → cp --reflink=always (instant CoW on Btrfs/XFS, no data copied)
+#   diff-fs  → cp --sparse=always  (copies file, skips zero runs)
+#   fallback → rsync --sparse      (if cp fails for any other reason)
 #
-# Note: --sparse is intentionally NOT used for raw restores (restore_vdisk in restore.sh)
-# because overwriting an existing file with sparse data leaves stale non-zero bytes.
-# Here we write to a fresh destination so --sparse is safe.
+# If dest already exists, delta sync is used instead (rsync --inplace --no-whole-file)
+# which only writes changed blocks — much faster for large vdisks with small changes.
 copy_vdisk() {
     local src_str="$1"
     local dest_str="$2"
-    local fmt_str="${3:-}"
 
     if is_dry_run; then
-        printf '[DRY-RUN] copy_vdisk %q -> %q\n' "$src_str" "$dest_str"
+        printf '[DRY-RUN] copy_vdisk %q -> %q
+' "$src_str" "$dest_str"
         return 0
     fi
 
-    debug_log "copy_vdisk: $src_str -> $dest_str (fmt=${fmt_str:-auto})"
+    debug_log "copy_vdisk: $src_str -> $dest_str"
 
-    # Detect format from file header if not provided
-    if [[ -z "$fmt_str" ]]; then
-        if command -v qemu-img >/dev/null 2>&1; then
-            fmt_str=$(qemu-img info --output=json "$src_str" 2>/dev/null \
-                      | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('format','raw'))" 2>/dev/null)
+    # Delta sync — if a previous backup exists, only write changed blocks
+    if [[ -f "$dest_str" ]]; then
+        debug_log "copy_vdisk: dest exists — using delta sync (rsync --inplace)"
+        rsync -aHAX --inplace --no-whole-file "$src_str" "$dest_str" &
+        RSYNC_PID=$!
+        echo "$RSYNC_PID" > "$LOG_DIR/rsync.pid"
+        wait $RSYNC_PID
+        local exit_code_int=$?
+        RSYNC_PID=""; rm -f "$LOG_DIR/rsync.pid"
+        if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
+            debug_log "copy_vdisk: delta sync interrupted (exit=$exit_code_int)"; exit 1
         fi
-        [[ -z "$fmt_str" ]] && fmt_str="raw"
+        debug_log "copy_vdisk: delta sync finished exit=$exit_code_int"
+        return $exit_code_int
     fi
 
-    # Try CoW reflink first — instant on same-filesystem Btrfs/XFS regardless of format
+    # Fresh copy — try reflink first (instant CoW on same Btrfs/XFS filesystem)
     if cp --reflink=always "$src_str" "$dest_str" 2>/dev/null; then
         debug_log "copy_vdisk: reflink OK (instant CoW)"
         return 0
     fi
 
-    # Reflink not supported — use format-aware copy
-    if [[ "$fmt_str" == "qcow2" ]]; then
-        # qemu-img convert: reads only allocated clusters, writes a clean qcow2.
-        # Much faster than full copy for sparsely-used disks.
-        # -p: progress to stderr, -W: skip zero clusters, -c: compress (optional but slower)
-        debug_log "copy_vdisk: qemu-img convert (qcow2, allocated clusters only)"
-        qemu-img convert -f qcow2 -O qcow2 -W -p "$src_str" "$dest_str" 2>/dev/null &
-        local qimg_pid_int=$!
-        wait $qimg_pid_int
-        local exit_code_int=$?
-        if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
-            debug_log "copy_vdisk: qemu-img interrupted (exit=$exit_code_int)"; exit 1
-        fi
-        if [[ $exit_code_int -eq 0 ]]; then
-            debug_log "copy_vdisk: qemu-img convert OK"
-            return 0
-        fi
-        # qemu-img failed — fall through to rsync
-        debug_log "copy_vdisk: qemu-img convert failed (exit=$exit_code_int), falling back to rsync"
-        rm -f "$dest_str"
+    # Cross-filesystem or no reflink support — cp --sparse=always
+    debug_log "copy_vdisk: cp --sparse=always"
+    cp --sparse=always "$src_str" "$dest_str" &
+    local cp_pid_int=$!
+    wait $cp_pid_int
+    local exit_code_int=$?
+    if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
+        debug_log "copy_vdisk: cp interrupted (exit=$exit_code_int)"; exit 1
+    fi
+    if [[ $exit_code_int -eq 0 ]]; then
+        debug_log "copy_vdisk: cp --sparse=always OK"
+        return 0
     fi
 
-    # raw disk (or qemu-img qcow2 fallback):
-    # Try qemu-img convert -f raw -O raw first — uses QEMU's block layer to skip
-    # unallocated extents, which rsync --sparse cannot detect (it only skips file-level
-    # zero runs, not block-layer unallocated regions).
-    if command -v qemu-img >/dev/null 2>&1 && [[ "$fmt_str" == "raw" ]]; then
-        debug_log "copy_vdisk: qemu-img convert (raw, unallocated extents skipped)"
-        qemu-img convert -f raw -O raw -W -p "$src_str" "$dest_str" 2>/dev/null &
-        local qimg_pid_int=$!
-        wait $qimg_pid_int
-        local exit_code_int=$?
-        if [[ -f "$STOP_FLAG" ]] || (( exit_code_int > 128 )); then
-            debug_log "copy_vdisk: qemu-img interrupted (exit=$exit_code_int)"; exit 1
-        fi
-        if [[ $exit_code_int -eq 0 ]]; then
-            debug_log "copy_vdisk: qemu-img convert raw OK"
-            return 0
-        fi
-        debug_log "copy_vdisk: qemu-img raw failed (exit=$exit_code_int), falling back to rsync"
-        rm -f "$dest_str"
-    fi
-
-    # Final fallback: rsync --sparse skips zero byte runs.
-    # Safe because dest is always a fresh file here.
-    debug_log "copy_vdisk: rsync --sparse (fallback)"
+    # Fallback: rsync --sparse
+    debug_log "copy_vdisk: cp failed (exit=$exit_code_int), falling back to rsync --sparse"
+    rm -f "$dest_str"
     rsync -aHAX --sparse "$src_str" "$dest_str" &
     RSYNC_PID=$!
     echo "$RSYNC_PID" > "$LOG_DIR/rsync.pid"
@@ -244,15 +139,6 @@ copy_vdisk() {
 set_status() { echo "$1" > "$STATUS_FILE"; }
 debug_log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backup debug - $*" >> "$DEBUG_LOG"; }
 
-log_path_resolution() {
-    local label_str="$1" raw_str="$2" resolved_str="$3"
-    if [[ -n "$raw_str" && "$raw_str" != "$resolved_str" ]]; then
-        echo "[PATH RESOLVED] $label_str: $raw_str -> $resolved_str (symlink followed)"
-        debug_log "[PATH RESOLVED] $label_str: $raw_str -> $resolved_str"
-    else
-        debug_log "$label_str: $resolved_str (no resolution needed)"
-    fi
-}
 
 is_dry_run()  { [[ "$DRY_RUN"     == "yes" ]]; }
 run_cmd() {
@@ -368,13 +254,6 @@ backup_owner_str="${BACKUP_OWNER:-nobody}"
 # classification. The copy tools (cp, rsync, qemu-img) handle VFS paths fine.
 backup_location_str="${BACKUP_DESTINATION:-}"
 export backup_location_str
-# Resolve and log if the destination path is a symlink to a different physical path.
-# The original path is kept for all operations — this is informational only.
-if [[ -n "$backup_location_str" ]]; then
-    _resolved_backup_str=$(readlink -f "$backup_location_str" 2>/dev/null || echo "$backup_location_str")
-    log_path_resolution "Backup Destination" "$backup_location_str" "$_resolved_backup_str"
-    unset _resolved_backup_str
-fi
 debug_log "BACKUP_DESTINATION=$backup_location_str"
 
 
@@ -516,20 +395,6 @@ for vm_str in "${CLEAN_VMS_arr[@]}"; do
     vm_backup_folder_str="$backup_location_str/$vm_str"
     run_cmd mkdir -p "$vm_backup_folder_str"
 
-    # Mount compat check
-    for vdisk_str in "${vdisks_arr[@]}"; do
-        if ! validate_mount_compatibility "$vdisk_str" "$backup_location_str"; then
-            echo "[ERROR] Skipping $vm_str due to incompatible mount types"
-            (( error_count_int++ ))
-            shopt -s nullglob
-            run_files_arr=( "$vm_backup_folder_str/${RUN_TS}_"* )
-            shopt -u nullglob
-            for f_str in "${run_files_arr[@]}"; do rm -f "$f_str"; done
-            [[ -z "$(ls -A "$vm_backup_folder_str")" ]] && rmdir "$vm_backup_folder_str"
-            continue 2
-        fi
-    done
-
     if [[ "$vm_state_before_str" == "running" ]]; then
         set_status "Stopping $vm_str"
         vms_stopped_by_script_arr+=("$vm_str")
@@ -579,26 +444,22 @@ for vm_str in "${CLEAN_VMS_arr[@]}"; do
                 continue 2
             fi
             base_str="$(basename "$vdisk_str")"
-            resolved_vdisk_str="$(readlink -f "$vdisk_str" 2>/dev/null || echo "$vdisk_str")"
-            log_path_resolution "Vdisk" "$vdisk_str" "$resolved_vdisk_str"
             dest_str="$vm_backup_folder_str/${RUN_TS}_$base_str"
             is_dry_run || echo "$vdisk_str -> $dest_str"
-            copy_vdisk "$resolved_vdisk_str" "$dest_str"
+            copy_vdisk "$vdisk_str" "$dest_str"
             [[ -f "$STOP_FLAG" ]] && { cleanup_partial_backup "$vm_backup_folder_str" "$RUN_TS"; exit 1; }
         done
 
         declare -A vdisk_dirs_arr
         for vdisk_str in "${vdisks_arr[@]}"; do
-            resolved_vdisk_str="$(readlink -f "$vdisk_str" 2>/dev/null || echo "$vdisk_str")"
-            vdisk_dirs_arr["$(dirname "$resolved_vdisk_str")"]=1
+            vdisk_dirs_arr["$(dirname "$vdisk_str")"]=1
         done
         for dir_str in "${!vdisk_dirs_arr[@]}"; do
             for extra_file_str in "$dir_str"/*; do
                 [[ -f "$extra_file_str" ]] || continue
                 already_bool=false
                 for vdisk_str in "${vdisks_arr[@]}"; do
-                    resolved_vdisk_str="$(readlink -f "$vdisk_str" 2>/dev/null || echo "$vdisk_str")"
-                    [[ "$extra_file_str" == "$resolved_vdisk_str" ]] && already_bool=true && break
+                    [[ "$extra_file_str" == "$vdisk_str" ]] && already_bool=true && break
                 done
                 $already_bool && continue
                 base_str="$(basename "$extra_file_str")"
