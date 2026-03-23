@@ -77,6 +77,7 @@ uasort($all_plugin_options_arr, fn($a,$b) => strcmp($a['label'],$b['label']));
 $notif_services_arr            = ['Discord', 'Gotify', 'Ntfy', 'Pushover', 'Slack', 'Unraid'];
 $selected_services_arr         = array_filter(explode(',', $settings_arr['NOTIFICATION_SERVICE'] ?? ''));
 $selected_services_restore_arr = array_filter(explode(',', $restore_settings_arr['NOTIFICATION_SERVICE_RESTORE'] ?? ''));
+
 ?>
 
 <!-- ── External CSS ──────────────────────────────────────────────────────────── -->
@@ -119,6 +120,7 @@ $selected_services_restore_arr = array_filter(explode(',', $restore_settings_arr
   if (!csrfToken_str) {
     console.warn('[vm-backup] CSRF token could not be determined — write operations may fail');
   }
+
 
   const SAVED_WEBHOOKS_OBJ = {
     DISCORD: "<?= htmlspecialchars($settings_arr['WEBHOOK_DISCORD']  ?? '') ?>",
@@ -495,6 +497,7 @@ $selected_services_restore_arr = array_filter(explode(',', $restore_settings_arr
           </div>
           <div id="vmbr-restore-popup" class="vmbr-popup"></div>
         </form>
+
 
       </div><!-- .vmbr-card -->
     </div><!-- #vmbr-backup-wrap -->
