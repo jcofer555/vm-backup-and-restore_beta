@@ -6,6 +6,7 @@ STOP_FLAG="/tmp/vm-backup-and-restore_beta/stop_requested.txt"
 RSYNC_PID=""
 WATCHER_PID=""
 SNAPSHOT_CLEANUP_arr=()   # "vm_str:disk_path:snapshot_name" entries for cleanup on abort
+STOPPED_FOR_BACKUP_arr=() # VMs that were stopped for backup (stop/copy/start fallback)
 
 LOG_DIR="/tmp/vm-backup-and-restore_beta"
 LOCK_FILE="$LOG_DIR/lock.txt"
@@ -242,7 +243,6 @@ do_backup() {
 
 	if [[ "$vm_state_str" != "running" ]]; then
 		# VM is offline — disk is already quiesced, copy directly
-		echo "VM $vm_str is not running — copying disks directly"
 		debug_log "do_backup: $vm_str not running (state=$vm_state_str), direct copy"
 		if is_dry_run; then
 			for vdisk_str in "${vdisks_arr[@]}"; do
@@ -258,7 +258,7 @@ do_backup() {
 	fi
 
 	if is_dry_run; then
-		echo "[DRY-RUN] Would backup $vm_str (VM stays running)"
+		echo "[DRY-RUN] Would backup $vm_str"
 		for vdisk_str in "${vdisks_arr[@]}"; do
 			local base_str dest_str
 			base_str="$(basename "$vdisk_str")"
@@ -304,7 +304,7 @@ do_backup() {
 		--disk-only --atomic --quiesce \
 		"${diskspec_args_arr[@]}" >/dev/null 2>"$snap_err_tmp_str"; then
 		snap_ok_bool=true
-		echo "Created quiesced snapshot for $vm_str"
+		echo "Created snapshot for $vm_str (guest agent installed)"
 		debug_log "do_backup: quiesced snapshot OK (filesystem-consistent)"
 	elif virsh snapshot-create-as "$vm_str" "$snap_name_str" \
 		--disk-only --atomic \
@@ -374,7 +374,6 @@ do_backup() {
 	done
 
 	SNAPSHOT_CLEANUP_arr=()
-	echo "Backup complete for $vm_str"
 	debug_log "do_backup: all overlays committed for $vm_str"
 }
 
@@ -452,7 +451,7 @@ _do_stop_copy_start() {
 		debug_log "_do_stop_copy_start: stopping $vm_str"
 		run_cmd virsh shutdown "$vm_str" >/dev/null 2>&1 || echo "WARNING: Failed to send shutdown to $vm_str"
 		if ! is_dry_run; then
-			local timeout_int=60
+			timeout_int=60
 			while [[ "$(virsh domstate "$vm_str" 2>/dev/null)" != "shut off" && $timeout_int -gt 0 ]]; do
 				[[ -f "$STOP_FLAG" ]] && exit 1
 				sleep 2
@@ -461,6 +460,7 @@ _do_stop_copy_start() {
 			if [[ $timeout_int -le 0 ]]; then
 				if virsh destroy "$vm_str" >/dev/null 2>&1; then
 					echo "Force stopped $vm_str"
+					STOPPED_FOR_BACKUP_arr+=("$vm_str")
 				else
 					echo "ERROR: Unable to stop $vm_str - skipping backup"
 					((error_count_int++))
@@ -468,6 +468,7 @@ _do_stop_copy_start() {
 				fi
 			else
 				echo "Stopped $vm_str"
+				STOPPED_FOR_BACKUP_arr+=("$vm_str")
 			fi
 		fi
 	fi
@@ -671,7 +672,7 @@ cleanup() {
 	set_status "Backup complete - Duration: $SCRIPT_DURATION_HUMAN"
 
 	if is_dry_run; then
-		echo "Skipping VM restarts because dry run is enabled"
+		((${#STOPPED_FOR_BACKUP_arr[@]} > 0)) && echo "Skipping VM restarts because dry run is enabled"
 		echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backup session finished - Duration: $SCRIPT_DURATION_HUMAN"
 		notify_vm "normal" "VM Backup & Restore" "Backup finished - Duration: $SCRIPT_DURATION_HUMAN"
 		rm -f "$STATUS_FILE"
@@ -708,6 +709,35 @@ RUN_TS="$(date +%Y%m%d_%H%M%S)"
 debug_log "RUN_TS=$RUN_TS"
 
 run_cmd mkdir -p "$backup_location_str"
+
+# Handle FORCE_STOP_VMS — stop selected VMs before backup for full consistency
+# This list is set by the WebUI "Force Stop" toggle via the config or env var.
+FORCE_STOP_VMS="${FORCE_STOP_VMS:-no}"
+FORCE_STOPPED_arr=()
+
+if [[ "$FORCE_STOP_VMS" == "yes" ]] && ! is_dry_run; then
+	debug_log "FORCE_STOP_VMS enabled — stopping VMs before backup"
+	for vm_str in "${CLEAN_VMS_arr[@]}"; do
+		[[ -z "$vm_str" ]] && continue
+		vm_state_str="$(virsh domstate "$vm_str" 2>/dev/null || echo "unknown")"
+		if [[ "$vm_state_str" == "running" ]]; then
+			echo "Force stopping $vm_str before backup"
+			set_status "Force stopping $vm_str"
+			virsh shutdown "$vm_str" >/dev/null 2>&1 || true
+			timeout_int=60
+			while [[ "$(virsh domstate "$vm_str" 2>/dev/null)" != "shut off" && $timeout_int -gt 0 ]]; do
+				[[ -f "$STOP_FLAG" ]] && exit 1
+				sleep 2
+				((timeout_int -= 2))
+			done
+			if [[ $timeout_int -le 0 ]]; then
+				virsh destroy "$vm_str" >/dev/null 2>&1 && echo "Force killed $vm_str" || echo "WARNING: Could not stop $vm_str"
+			fi
+			FORCE_STOPPED_arr+=("$vm_str")
+			debug_log "Force stopped: $vm_str"
+		fi
+	done
+fi
 
 for vm_str in "${CLEAN_VMS_arr[@]}"; do
 	[[ -z "$vm_str" ]] && continue
@@ -766,6 +796,22 @@ for vm_str in "${CLEAN_VMS_arr[@]}"; do
 	debug_log "--- Finished backup for VM: $vm_str ---"
 	_do_retention "$vm_str" "$vm_backup_folder_str" "$BACKUPS_TO_KEEP"
 done
+
+# Restart any VMs that were force-stopped before backup
+if ((${#FORCE_STOPPED_arr[@]} > 0)) && ! is_dry_run; then
+	debug_log "Restarting force-stopped VMs"
+	for vm_str in "${FORCE_STOPPED_arr[@]}"; do
+		[[ -z "$vm_str" ]] && continue
+		set_status "Starting $vm_str"
+		if virsh start "$vm_str" >/dev/null 2>&1; then
+			echo "Started $vm_str"
+			debug_log "Restarted force-stopped VM: $vm_str"
+		else
+			echo "WARNING: Failed to start $vm_str"
+			debug_log "Failed to restart force-stopped VM: $vm_str"
+		fi
+	done
+fi
 
 debug_log "All VMs processed"
 exit 0

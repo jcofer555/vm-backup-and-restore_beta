@@ -80,6 +80,7 @@ function vmbrSaveBackupSettings(onSuccess_fn) {
     BACKUPS_TO_KEEP: $('#vmbr-backup-keep').val(),
     BACKUP_OWNER: $('#vmbr-backup-owner').val(),
     DRY_RUN: $('#vmbr-backup-dry-run').val(),
+    FORCE_STOP_VMS: document.getElementById('vmbr-backup-force-stop')?.checked ? 'yes' : 'no',
     NOTIFICATIONS: document.getElementById('vmbr-backup-notif')?.value || 'no',
     NOTIFICATION_SERVICE: vmbrGetSelectedServices(false).join(','),
     WEBHOOK_DISCORD: webhooks_obj['WEBHOOK_DISCORD'] || '',
@@ -91,7 +92,7 @@ function vmbrSaveBackupSettings(onSuccess_fn) {
     csrf_token: csrfToken_str
   }).done(function (res) {
     if (res && res.status === 'ok') {
-      vmbrShowPopup('vmbr-backup-popup', '✓ Settings saved!');
+      vmbrShowPopup('vmbr-backup-popup', onSuccess_fn ? '✓ Settings saved and backup started!' : '✓ Settings saved!');
       if (onSuccess_fn) onSuccess_fn();
     } else {
       vmbrAlert('Failed to save settings');
@@ -130,7 +131,7 @@ function vmbrSaveRestoreSettings(onSuccess_fn) {
     csrf_token: csrfToken_str
   }).done(function (res) {
     if (res && res.status === 'ok') {
-      vmbrShowPopup('vmbr-restore-popup', '✓ Settings saved!');
+      vmbrShowPopup('vmbr-restore-popup', onSuccess_fn ? '✓ Settings saved and restore started!' : '✓ Settings saved!');
       if (onSuccess_fn) onSuccess_fn();
     } else {
       vmbrAlert('Failed to save settings');
