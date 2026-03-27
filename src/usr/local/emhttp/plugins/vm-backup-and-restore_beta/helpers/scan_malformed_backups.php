@@ -10,6 +10,16 @@ if ($restore_path_str === '' || !is_dir($restore_path_str) || strpos($restore_pa
     exit;
 }
 
+function vmbr_is_vdisk(string $lower_str): bool
+{
+    if (str_ends_with($lower_str, '.img'))   return true;
+    if (str_ends_with($lower_str, '.qcow2')) return true;
+    if (str_ends_with($lower_str, '.raw'))   return true;
+    if (str_contains($lower_str, 'qcow2'))   return true;
+    if (str_contains($lower_str, '.img'))    return true;
+    return false;
+}
+
 $result_arr = [];
 
 foreach (scandir($restore_path_str) as $vm_folder_str) {
@@ -25,26 +35,30 @@ foreach (scandir($restore_path_str) as $vm_folder_str) {
     $groups_arr = [];
 
     foreach (scandir($vm_path_str) as $file_str) {
-        if (preg_match('/^(\d{8})_(\d{6})_.*\.(img|qcow2|xml|fd)$/i', $file_str, $matches_arr)) {
-            $timestamp_str = $matches_arr[1] . '-' . $matches_arr[2];
-            $ext_str       = strtolower($matches_arr[3]);
+        if (!preg_match('/^(\d{8})_(\d{6})_/i', $file_str, $matches_arr)) {
+            continue;
+        }
+        $timestamp_str = $matches_arr[1] . '-' . $matches_arr[2];
+        $lower_str     = strtolower($file_str);
 
-            if (!isset($groups_arr[$timestamp_str])) {
-                $groups_arr[$timestamp_str] = ['img' => false, 'qcow2' => false, 'xml' => false, 'fd' => false];
-            }
-            $groups_arr[$timestamp_str][$ext_str] = true;
+        if (!isset($groups_arr[$timestamp_str])) {
+            $groups_arr[$timestamp_str] = ['disk' => false, 'xml' => false, 'fd' => false];
+        }
+
+        if (str_ends_with($lower_str, '.xml')) {
+            $groups_arr[$timestamp_str]['xml'] = true;
+        } elseif (str_ends_with($lower_str, '.fd')) {
+            $groups_arr[$timestamp_str]['fd'] = true;
+        } elseif (vmbr_is_vdisk($lower_str)) {
+            $groups_arr[$timestamp_str]['disk'] = true;
         }
     }
 
     foreach ($groups_arr as $ts_str => $found_arr) {
-        $has_disk_bool  = $found_arr['img'] || $found_arr['qcow2'];
-        $has_xml_bool   = $found_arr['xml'];
-        $has_nvram_bool = $found_arr['fd'];
-
         $missing_arr = [];
-        if (!$has_disk_bool)  $missing_arr[] = 'vdisk';
-        if (!$has_xml_bool)   $missing_arr[] = 'xml';
-        if (!$has_nvram_bool) $missing_arr[] = 'nvram';
+        if (!$found_arr['disk']) $missing_arr[] = 'vdisk';
+        if (!$found_arr['xml'])  $missing_arr[] = 'xml';
+        if (!$found_arr['fd'])   $missing_arr[] = 'nvram';
 
         if (!empty($missing_arr)) {
             $dt_obj      = DateTime::createFromFormat('Ymd-His', $ts_str);

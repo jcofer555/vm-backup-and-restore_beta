@@ -39,6 +39,23 @@ function vmbrSwitchMode(mode_str) {
   $('#vmbr-active-card-title').text(isBackup_bool ? 'Backup' : 'Restore');
   $('#vmbr-backup-status-wrap').toggle(isBackup_bool);
   $('#vmbr-restore-status-wrap').toggle(!isBackup_bool);
+
+  // Cross-populate paths when switching modes — only fill if the target is empty
+  if (!isBackup_bool) {
+    // Switched to Restore: fill Backups Location from Backup Destination if empty
+    const dest_str    = $('#vmbr-backup-destination').val().trim();
+    const location_str = $('#vmbr-restore-location').val().trim();
+    if (!location_str && dest_str) {
+      $('#vmbr-restore-location').val(dest_str).trigger('change');
+    }
+  } else {
+    // Switched to Backup: fill Backup Destination from Backups Location if empty
+    const location_str = $('#vmbr-restore-location').val().trim();
+    const dest_str     = $('#vmbr-backup-destination').val().trim();
+    if (!dest_str && location_str) {
+      $('#vmbr-backup-destination').val(location_str).trigger('change');
+    }
+  }
 }
 
 function vmbrH(path_str) { return HELPERS_BASE_STR + '/' + path_str; }

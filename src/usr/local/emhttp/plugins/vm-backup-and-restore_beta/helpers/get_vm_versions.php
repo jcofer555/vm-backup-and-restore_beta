@@ -12,6 +12,16 @@ if (!is_dir($base_path_str)) {
     exit;
 }
 
+function vmbr_is_vdisk(string $lower_str): bool
+{
+    if (str_ends_with($lower_str, '.img'))   return true;
+    if (str_ends_with($lower_str, '.qcow2')) return true;
+    if (str_ends_with($lower_str, '.raw'))   return true;
+    if (str_contains($lower_str, 'qcow2'))   return true;
+    if (str_contains($lower_str, '.img'))    return true;
+    return false;
+}
+
 $files_arr    = scandir($base_path_str);
 $versions_arr = [];
 
@@ -35,15 +45,9 @@ foreach ($versions_arr as $raw_str => $files_for_version_arr) {
 
         if (str_ends_with($lower_str, '.xml')) {
             $has_xml_bool = true;
-            continue;
-        }
-        if (str_ends_with($lower_str, '.fd')) {
+        } elseif (str_ends_with($lower_str, '.fd')) {
             $has_nvram_bool = true;
-            continue;
-        }
-        if (str_ends_with($lower_str, '.img')
-            || str_ends_with($lower_str, '.qcow2')
-            || str_ends_with($lower_str, '.raw')) {
+        } elseif (vmbr_is_vdisk($lower_str)) {
             $has_disk_bool = true;
         }
     }

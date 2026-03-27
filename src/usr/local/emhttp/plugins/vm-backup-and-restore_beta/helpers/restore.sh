@@ -332,14 +332,26 @@ for vm_str in "${vm_names_arr[@]}"; do
 	# Collect all vdisk files for this version.
 	# Snapshot backups produce a full base disk copy (same filename as the
 	# original vdisk) — restore is a straight file copy just like a full backup.
-	disks_arr=()
-	for f_str in "$backup_dir_str"/"${prefix_str}"*; do
-		[[ -f "$f_str" ]] || continue
-		case "$f_str" in
-		*.xml | *VARS*.fd) continue ;;
-		*) disks_arr+=("$f_str") ;;
-		esac
-	done
+disks_arr=()
+for f_str in "$backup_dir_str"/"${prefix_str}"*; do
+	[[ -f "$f_str" ]] || continue
+
+	base_name_str=$(basename "$f_str")
+
+	# Skip metadata
+	if [[ "$base_name_str" == *.xml || "$base_name_str" == *VARS*.fd ]]; then
+		continue
+	fi
+
+	# Match valid disk files:
+	# - ends with .img
+	# - OR contains "qcow2" anywhere in the name
+	if [[ "$base_name_str" == *.img || "$base_name_str" == *qcow2* || "$base_name_str" == *.raw ]]; then
+		disks_arr+=("$f_str")
+	else
+		debug_log "Skipping non-disk file: $f_str"
+	fi
+done
 
 	debug_log "xml=${xml_file_str:-not found} nvram=${nvram_file_str:-not found}"
 	debug_log "disks: ${disks_arr[*]:-none}"
@@ -353,7 +365,7 @@ for vm_str in "${vm_names_arr[@]}"; do
 	fi
 	[[ ! -f "$xml_file_str" ]] && missing_files_arr+=("XML (.xml)")
 	[[ ! -f "$nvram_file_str" ]] && missing_files_arr+=("NVRAM (*VARS*.fd)")
-	((${#disks_arr[@]} == 0)) && missing_files_arr+=("vdisk (.img or .qcow2)")
+	((${#disks_arr[@]} == 0)) && missing_files_arr+=("vdisk (.img or *qcow2*)")
 
 	if ((${#missing_files_arr[@]} > 0)); then
 		echo "[ERROR] Backup for $vm_str (version: $version_str) is incomplete — missing:"

@@ -58,6 +58,14 @@ if (!file_exists(CFG_RESTORE_PATH)) {
 $existing_restore_arr = parse_ini_file(CFG_RESTORE_PATH) ?: [];
 $restore_settings_arr = array_merge($restore_defaults_arr, $existing_restore_arr);
 
+// Cross-populate paths if the field is empty
+if (empty($settings_arr['BACKUP_DESTINATION']) && !empty($restore_settings_arr['LOCATION_OF_BACKUPS'])) {
+    $settings_arr['BACKUP_DESTINATION'] = $restore_settings_arr['LOCATION_OF_BACKUPS'];
+}
+if (empty($restore_settings_arr['LOCATION_OF_BACKUPS']) && !empty($settings_arr['BACKUP_DESTINATION'])) {
+    $restore_settings_arr['LOCATION_OF_BACKUPS'] = $settings_arr['BACKUP_DESTINATION'];
+}
+
 $sibling_plugin_checks_arr = [
     'automover'             => ['plg'=>'/boot/config/plugins/automover.plg',             'page'=>'/usr/local/emhttp/plugins/automover/automover.page',                         'label'=>'Automover',              'url'=>'/Settings/automover'],
     'flash-backup'          => ['plg'=>'/boot/config/plugins/flash-backup.plg',          'page'=>'/usr/local/emhttp/plugins/flash-backup/flash-backup.page',                   'label'=>'Flash Backup',           'url'=>'/Settings/flash-backup'],

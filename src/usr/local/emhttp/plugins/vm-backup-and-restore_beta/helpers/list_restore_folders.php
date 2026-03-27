@@ -10,6 +10,17 @@ if ($restore_path_str === '' || !is_dir($restore_path_str) || strpos($restore_pa
     exit;
 }
 
+function vmbr_is_vdisk(string $lower_str): bool
+{
+    if (str_ends_with($lower_str, '.img'))   return true;
+    if (str_ends_with($lower_str, '.qcow2')) return true;
+    if (str_ends_with($lower_str, '.raw'))   return true;
+    // compound names like vdisk1.2342342qcow2 — no dot before the token
+    if (str_contains($lower_str, 'qcow2'))   return true;
+    if (str_contains($lower_str, '.img'))    return true;
+    return false;
+}
+
 $valid_folders_arr = array_values(array_filter(
     scandir($restore_path_str),
     static function (string $item_str) use ($restore_path_str): bool {
@@ -22,21 +33,25 @@ $valid_folders_arr = array_values(array_filter(
             return false;
         }
 
-        // Group files by timestamp — valid if any group has all 3 required files
         $groups_arr = [];
 
         foreach (scandir($full_path_str) as $file_str) {
-            if (preg_match('/^(\d{8}_\d{6})_.*\.(img|qcow2|xml|fd)$/i', $file_str, $matches_arr)) {
-                $ts_str  = $matches_arr[1];
-                $ext_str = strtolower($matches_arr[2]);
-                if (!isset($groups_arr[$ts_str])) {
-                    $groups_arr[$ts_str] = ['disk' => false, 'xml' => false, 'fd' => false];
-                }
-                if ($ext_str === 'img' || $ext_str === 'qcow2') {
-                    $groups_arr[$ts_str]['disk'] = true;
-                } else {
-                    $groups_arr[$ts_str][$ext_str] = true;
-                }
+            if (!preg_match('/^(\d{8}_\d{6})_/i', $file_str, $ts_matches_arr)) {
+                continue;
+            }
+            $ts_str    = $ts_matches_arr[1];
+            $lower_str = strtolower($file_str);
+
+            if (!isset($groups_arr[$ts_str])) {
+                $groups_arr[$ts_str] = ['disk' => false, 'xml' => false, 'fd' => false];
+            }
+
+            if (str_ends_with($lower_str, '.xml')) {
+                $groups_arr[$ts_str]['xml'] = true;
+            } elseif (str_ends_with($lower_str, '.fd')) {
+                $groups_arr[$ts_str]['fd'] = true;
+            } elseif (vmbr_is_vdisk($lower_str)) {
+                $groups_arr[$ts_str]['disk'] = true;
             }
         }
 
